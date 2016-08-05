@@ -1,0 +1,36 @@
+@import "variables";
+
+#home-main-body-wrapper {
+    padding: 20px;
+
+    #add-new-notebook-items-wrapper {
+        display:inline-block;
+        margin: 0 auto;
+        min-width: 900px;
+        width: 60%;
+        background: rgba(255,255,255,0.9);
+        @include border-radius(4px);
+        @include box-shadow(0px, 0px, 10px, rgba(0,0,0,0.15));
+
+        #add-new-notebook-items-inner-wrapper {
+            display: none;
+            width: 100%;
+            padding: 20px;
+            @include box-sizing-border-box;
+
+            textarea {
+                width: 100%;
+                max-width: 100%;
+                min-width: 100%;
+                margin-top: 10px;
+                height: 300px;
+                max-height: 500px;
+                min-height: 300px;
+            }
+
+            .button {
+                margin-top: 10px;
+            }
+        }
+    }
+}
