@@ -1,9 +1,6 @@
-$red-color: #CC0000;
-$green-color: #00B200;
+@import "_colors";
 
-$main-color: #0093d0;
-$dark-main-color: #006DBD;
-$main-text-color: #1C4D6F;
+$default-border-radius: 4px;
 
 @mixin border-radius($radius) {
     -webkit-border-radius: $radius;

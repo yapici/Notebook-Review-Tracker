@@ -2,7 +2,7 @@
 /* ===================================================================================== */
 /* Copyright 2016 Engin Yapici <engin.yapici@gmail.com>                                  */
 /* Created on 08/04/2016                                                                 */
-/* Last modified on 08/04/2016                                                           */
+/* Last modified on 08/05/2016                                                           */
 /* ===================================================================================== */
 
 /* ===================================================================================== */
@@ -33,5 +33,11 @@
 $Functions = new Functions();
 
 /** @var Users $Users */
-$Users = new Users($OMSDatabase, $Functions);
+$Users = new Users($Database, $Functions);
+
+/** @var Statuses $Statuses */
+$Statuses = new Statuses($Database, $Functions);
+
+/** @var Notebooks $Notebooks */
+$Notebooks = new Notebooks($Database, $Functions);
 

@@ -1,8 +1,8 @@
 <?php
 /* ===================================================================================== */
 /* Copyright 2016 Engin Yapici <engin.yapici@gmail.com>                                  */
-/* Created on 08/04/2016                                                                 */
-/* Last modified on 08/05/2016                                                           */
+/* Created on 08/05/2016                                                                 */
+/* Last modified on 08/21/2016                                                           */
 /* ===================================================================================== */
 
 /* ===================================================================================== */
@@ -29,13 +29,13 @@
 /* THE SOFTWARE.                                                                         */
 /* ===================================================================================== */
 
-class Users {
+class Notebooks {
 
     private $Database;
     private $Functions;
 
     /** @var array $usersArray */
-    public $usersArray;
+    public $notebooksArray;
 
     /**
      * @param Database $database
@@ -48,12 +48,26 @@ class Users {
     }
 
     private function populateArray() {
-        $sql = sprintf("SELECT id, username, email, account_status FROM %s.users ORDER BY id DESC", Constants::OMS_DB_NAME);
+        $query_string = "SELECT n.id, "
+                . "n.notebook_no, "
+                . "n.author_id, "
+                . "n.reviewer_id, "
+                . "n.status_id, "
+                . "n.created_date, "
+                . "u1.username AS author_username, "
+                . "u2.username AS reviewer_username, "
+                . "s.status_name "
+                . "FROM notebooks AS n "
+                . "JOIN %s.users AS u1 ON (n.author_id = u1.id) "
+                . "JOIN %s.users AS u2 ON (n.reviewer_id = u2.id) "
+                . "JOIN status s ON (n.status_id = s.id)";
+        
+        $sql = sprintf($query_string, Constants::OMS_DB_NAME, Constants::OMS_DB_NAME);
         $stmt = $this->Database->prepare($sql);
         $stmt->execute();
         while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
             $sanitizedArray = $this->Functions->sanitizeArray($row);
-            $this->usersArray[$sanitizedArray['id']] = $sanitizedArray;
+            $this->notebooksArray[$sanitizedArray['id']] = $sanitizedArray;
         }
     }
 
@@ -62,26 +76,34 @@ class Users {
     }
 
     /**
-     * @return array $usersArray
+     * @return array $notebooksArray
      */
-    public function getUsersArray() {
-        return $this->usersArray;
+    public function getNotebooksArray() {
+        return $this->notebooksArray;
     }
 
-    /**
-     * Echoes the 'select' dropdown list of active users.
-     */
-    public function populateUsersDropdown() {
-        $html = '<select>';
-        foreach ($this->usersArray as $userId => $user) {
-            if ($user['account_status'] == '1') {
-                $userName = $user['username'];
-                $html .= "<option value='$userName'>$userName</option>";
+    public function populateNotebooksTable() {
+        $tableBody = '';
+        if (!empty($this->notebooksArray)) {
+            foreach ($this->notebooksArray as $id => $notebook) {
+                $notebookNo = $notebook['notebook_no'];
+                $assigedDate = $this->Functions->convertMysqlDateToPhpDate($notebook['created_date']);
+                $status = $notebook['status_name'];
+                $author = $notebook['author_username'];
+                
+                $tableBody .= "<tr id=$id>";
+                $tableBody .= "<td>$notebookNo</td>";
+                $tableBody .= "<td>$assigedDate</td>";
+                $tableBody .= "<td>$status</td>";
+                $tableBody .= "<td>$author</td>";
+                $tableBody .= "</tr>";
             }
+        } else {
+            $tableBody = "<tr><td colspan='4'>There are no notebooks</td></tr>";
         }
-        $html .= "</select>";
-        echo $html;
+        echo $tableBody;
     }
+
 }
 ?>
 

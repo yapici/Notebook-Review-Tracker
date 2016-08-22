@@ -2,7 +2,7 @@
 /* ===================================================================================== */
 /* Copyright 2016 Engin Yapici <engin.yapici@gmail.com>                                  */
 /* Created on 08/03/2016                                                                 */
-/* Last modified on 08/04/2016                                                           */
+/* Last modified on 08/05/2016                                                           */
 /* ===================================================================================== */
 
 /* ===================================================================================== */
@@ -35,7 +35,7 @@ final class Constants {
     const DB_SERVER = 'localhost';
     const DB_USER = 'nrm_user';
     const DB_PASS = 'L0m)vLP*4Hw$jHS_1I@Wt';
-    const NRM_DB_NAME = 'nrm_database';
+    const NRM_DB_NAME = 'nrt_database';
     const OMS_DB_NAME = 'oms_database';
     
     private function __construct() {

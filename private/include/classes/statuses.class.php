@@ -1,8 +1,9 @@
 <?php
+
 /* ===================================================================================== */
 /* Copyright 2016 Engin Yapici <engin.yapici@gmail.com>                                  */
-/* Created on 08/04/2016                                                                 */
-/* Last modified on 08/21/2016                                                           */
+/* Created on 08/05/2016                                                                 */
+/* Last modified on 08/05/2016                                                           */
 /* ===================================================================================== */
 
 /* ===================================================================================== */
@@ -29,62 +30,57 @@
 /* THE SOFTWARE.                                                                         */
 /* ===================================================================================== */
 
-class Functions {
-    /** @param array $array 
-     *  @return array $sanitizedArray
-     */
-    public function sanitizeArray($array) {
-        $sanitizedArray = array();
-        foreach ($array as $key => $value) {
-            $sanitizedArray[$key] = htmlspecialchars(trim($value));
-        }
-        return $sanitizedArray;
-    }
+class Statuses {
 
-    /* ################################# -- Date Conversion Functions -- ################################## */
-    /* #################################################################################################### */
+    private $Database;
+    private $Functions;
 
-    public function convertMysqlDateToPhpDate($date) {
-        if ($date == "0000-00-00" || $date == "0000-00-00 00:00:00") {
-            $date = "N/A";
-        } else {
-            $date = date('d-M-Y', strtotime($date));
-        }
-        return $date;
-    }
+    /** @var array $usersArray */
+    public $statusesArray;
 
-    /** @param string $date
-     *  @return string $convertedDate
-     */
-    public function convertStrDateToMysqlDate($date) {
-        $slashesReplacedDate = str_replace("/", "-", $date);
-        try {
-            $convertedDate = date('Y-m-d', strtotime($slashesReplacedDate));
-            if ($convertedDate == "1970-01-01" || $convertedDate == "1969-12-31") {
-                $convertedDate = date('Y-m-d', strtotime(preg_replace("/(\d+)\D+(\d+)\D+(\d+)/", "$3-$2-$1", $date)));
-                if ($convertedDate == "1970-01-01" || $convertedDate == "1969-12-31") {
-                    $dashesReplacedDate = str_replace("-", "/", $date);
-                    $convertedDate = date('Y-m-d', strtotime($dashesReplacedDate));
-                }
-            }
-        } catch (Exception $e) {
-            $convertedDate = "0";
-        }
-        return $convertedDate;
-    }
-
-    /* /  ************************************************************************************************* */
-    /* /  ****************************** -- Date Conversion Functions -- ********************************** */
-    
     /**
-     *  @param string $title
-     *  @param string $error_msg
+     * @param Database $database
+     * @param Functions $functions
      */
-    public function logError($title, $error_msg) {
-        error_log("\n$title\n", 3, "php.log");
-        error_log($error_msg, 3, "php.log");
-        error_log("\n$title\n", 3, "php.log");
+    function __construct($database, $functions) {
+        $this->Database = $database;
+        $this->Functions = $functions;
+        $this->populateArray();
     }
-}
 
+    private function populateArray() {
+        $sql = sprintf("SELECT s.id, s.status_name, s.created_by_user_id FROM status s JOIN %s.users u ON (s.created_by_user_id = u.id) WHERE s.deleted = 0", Constants::OMS_DB_NAME);
+        $stmt = $this->Database->prepare($sql);
+        $stmt->execute();
+        while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
+            $sanitizedArray = $this->Functions->sanitizeArray($row);
+            $this->statusesArray[$sanitizedArray['id']] = $sanitizedArray;
+        }
+    }
+
+    public function refreshArray() {
+        $this->populateArray();
+    }
+
+    /**
+     * @return array $statusesArray
+     */
+    public function getStatusesArray() {
+        return $this->statusesArray;
+    }
+
+    public function populateStatusesforTable() {
+        $tableBody = '';
+        if (!empty($this->statusesArray)) {
+            foreach ($this->statusesArray as $statusId => $status) {
+                $userEmail = $user['email'];
+            }
+        } else {
+            $tableBody = "<tr><td colspan='4'>There are no notebook </td></tr>";
+        }
+    }
+
+}
 ?>
+
+

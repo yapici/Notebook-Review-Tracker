@@ -2,7 +2,7 @@
 /* ===================================================================================== */
 /* Copyright 2016 Engin Yapici <engin.yapici@gmail.com>                                  */
 /* Created on 08/03/2016                                                                 */
-/* Last modified on 08/04/2016                                                           */
+/* Last modified on 08/21/2016                                                           */
 /* ===================================================================================== */
 
 /* ===================================================================================== */
@@ -68,6 +68,25 @@ require_once('../private/include/include.php');
                     <textarea placeholder="Comments"></textarea>
                     <a class="button">Submit</a>
                 </div>
+            </div>
+            <div id="assigned-notebooks-for-review-table-wrapper">
+                <table id="assigned-notebooks-for-review-table-wrapper">
+                    <thead>
+                        <tr>
+                            <th>Notebook No</th>
+                            <th>Assigned Date</th>
+                            <th>Status</th>
+                            <th>Author</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <?php
+                        $Notebooks->populateNotebooksTable();
+                        ?>
+                    </tbody>
+                </table>
+            </div>
+            <div id="my-notebooks-waiting-for-review-table-wrapper">
             </div>
         </div>
     </body>

@@ -61,7 +61,7 @@ input,
 select,
 textarea {
     padding: 8px 10px;
-    @include border-radius(4px);
+    @include border-radius($default-border-radius);
 }
 
 h1 {
@@ -71,8 +71,8 @@ h1 {
     font-weight: bold;
     font-size: 1.6em;
     border-bottom: 2px solid $dark-main-color;
-    @include top-left-corner-radius(4px);
-    @include top-right-corner-radius(4px);
+    @include top-left-corner-radius($default-border-radius);
+    @include top-right-corner-radius($default-border-radius);
 }
 
 h2 {
@@ -153,6 +153,53 @@ select {
     }
 }
 
+table {
+    border-collapse: collapse;
+    @include border-radius($default-border-radius);
+    overflow: hidden;
+    margin: 20px auto;
+    @include box-shadow(0, 0, 10px, rgba(0,0,0,0.15));
+
+    thead tr th {
+        background: $main-color;
+        color: #ffffff;
+        font-size: 1em;
+        text-align: center;
+        font-weight: bold;
+        padding: 8px 20px;
+        margin: 0;
+        border-top: 1px solid $main-color; 
+        border-bottom: 2px solid $dark-main-color;
+    }
+
+    th, td {
+        position: relative;
+
+        &:after {
+            content: '';
+            width: 1px;
+            height: 60%;
+            top: 20%;
+            background: rgba(0, 0, 0, 0.1);
+            position: absolute;
+            right: 0px;
+        }
+
+        &:last-child {
+            &:after {
+                background: transparent;
+            }
+        }
+    }
+
+    tbody {
+        tr td {
+            background: $white-color;
+            padding: 4px 10px;
+        }
+    }
+}
+
 .header {
     padding: 0.4em;
     width: 100%;
@@ -188,7 +235,6 @@ select {
 .heading {
     @extend .button;
     width: 100%;
-    background: $main-color;
     color: #ffffff;
     font-size: 1.4em;
     text-align: center;

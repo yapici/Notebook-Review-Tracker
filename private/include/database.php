@@ -2,7 +2,7 @@
 /* ===================================================================================== */
 /* Copyright 2016 Engin Yapici <engin.yapici@gmail.com>                                  */
 /* Created on 08/03/2016                                                                 */
-/* Last modified on 08/04/2016                                                           */
+/* Last modified on 08/05/2016                                                           */
 /* ===================================================================================== */
 
 /* ===================================================================================== */
@@ -32,15 +32,11 @@
 $dbServer = Constants::DB_SERVER;
 $dbUser = Constants::DB_USER;
 $dbPass = Constants::DB_PASS;
-$nrmDbName = Constants::NRM_DB_NAME;
-$omsDbName = Constants::OMS_DB_NAME;
+$dbName = Constants::NRM_DB_NAME;
 
 try {
-    $Database = new PDO("mysql:host=$dbServer;dbname=$nrmDbName", $dbUser, $dbPass);
+    $Database = new PDO("mysql:host=$dbServer;dbname=$dbName", $dbUser, $dbPass);
     $Database->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-    
-    $OMSDatabase = new PDO("mysql:host=$dbServer;dbname=$omsDbName", $dbUser, $dbPass);
-    $OMSDatabase->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 } catch (PDOException $e) {
     echo $e->getMessage();
 }
