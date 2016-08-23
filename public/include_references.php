@@ -2,7 +2,7 @@
 /* ===================================================================================== */
 /* Copyright 2016 Engin Yapici <engin.yapici@gmail.com>                                  */
 /* Created on 08/03/2016                                                                 */
-/* Last modified on 08/03/2016                                                           */
+/* Last modified on 08/22/2016                                                           */
 /* ===================================================================================== */
 
 /* ===================================================================================== */
@@ -35,9 +35,10 @@
 <script src="js/main.js"></script>
 <link href="css/jquery-ui-1.12.0.min.css" rel="stylesheet">
 <link href="css/main.css" rel="stylesheet">
+<link rel="icon" type="image/png" href="/images/favicon.png" sizes="96x96" />
 <?php
 /* Getting the current file's name without the extension and checking whether
- * there is are css and js files with the same name. If there are, they are included.
+ * there are css and js files with the same name. If there are, they are included.
  */
 $name = basename(filter_input(INPUT_SERVER, 'SCRIPT_FILENAME'), '.php');
 
