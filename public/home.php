@@ -57,7 +57,7 @@ if (!$Session->isSessionValid()) {
             </span>
             <div id="assigned-notebooks-for-review-table-wrapper" class="table-wrapper">
                 <div class="heading table-heading">Notebooks Assigned to Me</div>
-                <table id="assigned-notebooks-for-review-table-wrapper">
+                <table id="assigned-notebooks-for-review-table-wrapper" class="notebooks-table">
                     <thead>
                         <tr>
                             <th>Notebook No</th>
@@ -75,7 +75,7 @@ if (!$Session->isSessionValid()) {
             </div>
             <div id="my-notebooks-waiting-for-review-table-wrapper" class="table-wrapper">
                 <div class="heading table-heading">My Notebooks</div>
-                <table id="my-notebooks-table-wrapper">
+                <table id="my-notebooks-table-wrapper" class="notebooks-table">
                     <thead>
                         <tr>
                             <th>Notebook No</th>

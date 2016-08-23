@@ -242,7 +242,7 @@ table {
         }
 
         tr:nth-child(even) > td {
-            background-color: $light-color-3;
+            background-color: $very-light-gray-color;
         }
 
         tr:nth-child(odd) > td {
@@ -250,7 +250,7 @@ table {
         }
 
         tr:hover > td {
-            background-color: $light-color-2;
+            background-color: $light-color-3;
         }
     }
 }
