@@ -110,13 +110,20 @@ var Core = {
                         $(params.errorDiv).html('Something went wrong. Please try again.');
                     }
                 });
+    },
+    resetSelect: function (select) {
+        select.find("option").removeAttr("selected");
+        select.find("option:first-child").removeAttr("disabled");
+        select.find("option:first-child").attr("selected", "true");
+        select.find("option:first-child").attr("disabled", "true");
+        select.css("color", "#999999");
     }
 };
 
 var Constants = {
     DOMAIN_EMAIL_EXT: "@example.com",
     DOMAIN_BODY: 'example',
-    SERVER_FAIL_RESPONSE: 'Something went wrong with the server, please try again.',
+    SERVER_FAIL_RESPONSE: 'Something went wrong with the server, please try again later or contact webmaster.',
     RED_COLOR: "#CC0000",
     MAIN_TEXT_COLOR: "#1C4D6F"
 };

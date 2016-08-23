@@ -45,43 +45,16 @@ if (!$Session->isSessionValid()) {
     </head>
 
     <body>
-        <?php require_once (PRIVATE_PATH . 'require/header.php'); ?>     
+        <?php require_once (PRIVATE_PATH . 'require/header.php'); ?>
+        <?php require_once (PRIVATE_PATH . 'require/add-new-item-popup.php'); ?>
         <div id="main-toast-wrapper"></div>
         <div id="gray-out-div"></div>
         <img id="progress-bar" src="images/progress-bar.gif"/>
         <div id="home-main-body-wrapper">
             <span id='button-holder-span'>
-                <span title='Log Out' onclick='Core.logoutAction();'><img class='absolute-buttons' id='logout-button' src='images/logout-icon.png'></img></span>
+                <span data-tooltip='Log Out' class="custom-tooltip" onclick='Core.logoutAction();'><img class='absolute-buttons' id='logout-button' src='images/logout-icon.png'></img></span>
+                <span data-tooltip='Add New Item' class="custom-tooltip" onclick='AddNewItem.showPopup();'><img class='absolute-buttons' src='images/plus-icon.png'></img></span>
             </span>
-            <div id="add-new-notebook-items-wrapper">
-                <div class="heading" onclick="AddNewItem.toggleAddNewItemView()">Add New Notebook for Review</div>
-                <div id="add-new-notebook-items-inner-wrapper">
-                    <div id="add-new-item-error-div" class="error-div"></div>
-                    <select id="add-new-item-division">
-                        <option disabled selected>Division</option>
-                        <option value="DIV1">DIV1</option>
-                        <option value="DIV2">DIV2</option>
-                        <option value="DIV3">DIV3</option>
-                        <option value="DIV4">DIV4</option>
-                    </select>
-                    <select id="add-new-item-project">
-                        <option disabled selected>Project</option>
-                        <option value="Project1">Project1</option>
-                        <option value="Project2">Project2</option>
-                        <option value="Project3">Project3</option>
-                        <option value="Project4">Project4</option>
-                        <option value="Project5">Project5</option>
-                        <option value="Project6">Project6</option>
-                        <option value="Project7">Project7</option>
-                    </select>
-                    <input  id="add-new-item-number" type="number" placeholder="Entry No (e.g. 38)"></input>
-                    <?php
-                    $Users->populateUsersDropdown("add-new-item-reviewer");
-                    ?>
-                    <textarea placeholder="Comments" id="add-new-item-comments"></textarea>
-                    <a class="button" onclick="AddNewItem.addNewItem()">Submit</a>
-                </div>
-            </div>
             <div id="assigned-notebooks-for-review-table-wrapper" class="table-wrapper">
                 <div class="heading table-heading">Notebooks Assigned to Me</div>
                 <table id="assigned-notebooks-for-review-table-wrapper">

@@ -1,3 +1,7 @@
+$(document).ready(function () {
+    AddNewItem.selectChangeListener();
+});
+
 var AddNewItem = {
     toggleAddNewItemView: function () {
         var view = $("#add-new-notebook-items-inner-wrapper");
@@ -24,10 +28,9 @@ var AddNewItem = {
                 }, 600);
             }
         }
-
-
     },
     addNewItem: function () {
+        var that = this;
         var division = $("#add-new-item-division").val();
         var project = $("#add-new-item-project").val();
         var number = $("#add-new-item-number").val();
@@ -61,8 +64,33 @@ var AddNewItem = {
 
             Core.ajax(params,
                     function (json) {
-                        console.log(json);
+                        if (json.status === "success") {
+                            that.closePopup();
+                            Core.resetSelect($("#add-new-notebook-items-wrapper select"));
+                            Core.resetErrorDiv($("#add-new-item-error-div"));
+                            $("#add-new-item-number").val("");
+                            $("#add-new-item-comments").val("");
+                        } else {
+                            errorDiv.html(Constants.SERVER_FAIL_RESPONSE);
+                        }
                     });
         }
+    },
+    showPopup: function () {
+        $("#add-new-notebook-items-wrapper").fadeIn();
+        $("#gray-out-div").fadeIn();
+    },
+    closePopup: function () {
+        $("#add-new-notebook-items-wrapper").fadeOut();
+        $("#gray-out-div").fadeOut();
+    },
+    selectChangeListener: function () {
+        $("#add-new-notebook-items-wrapper select").css('color', '#999999');
+
+        $(document).on('change', '#add-new-notebook-items-wrapper select', function () {
+            if (!$(this).is(':disabled')) {
+                $(this).css('color', Constants.MAIN_TEXT_COLOR);
+            }
+        });
     }
 };
