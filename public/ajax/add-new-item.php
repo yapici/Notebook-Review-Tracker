@@ -1,7 +1,8 @@
 <?php
+
 /* ===================================================================================== */
 /* Copyright 2016 Engin Yapici <engin.yapici@gmail.com>                                  */
-/* Created on 08/03/2016                                                                 */
+/* Created on 08/22/2016                                                                 */
 /* Last modified on 08/22/2016                                                           */
 /* ===================================================================================== */
 
@@ -29,25 +30,23 @@
 /* THE SOFTWARE.                                                                         */
 /* ===================================================================================== */
 
-final class Constants {
+require('../../private/include/include.php');
+// Below if statement prevents direct access to the file. It can only be accessed through "AJAX".
+if (filter_input(INPUT_SERVER, 'HTTP_X_REQUESTED_WITH')) {
+// Getting the parameters passed through AJAX
+    $sanitizedPostArray = $Functions->sanitizePostedVariables();
+    $notebookNo = $sanitizedPostArray['notebook_no'];
+    $reviewer = $sanitizedPostArray['reviewer'];
+    $comments = $sanitizedPostArray['comments'];
 
-    // Database details
-    const DB_SERVER = 'localhost';
-    const DB_USER = 'nrm_user';
-    const DB_PASS = 'L0m)vLP*4Hw$jHS_1I@Wt';
-    const NRM_DB_NAME = 'nrt_database';
-    const OMS_DB_NAME = 'oms_database';
-    
-    // Domain name
-    const DOMAIN_NAME = 'www.example.com';
-    const DOMAIN_NAME_HTTP = 'http://www.example.com';
-    const DOMAIN_EMAIL_EXT = 'example.com';
-    
-    // Webmaster E-mail
-    const WEBMASTER_EMAIL = 'engin.yapici@example.com';
-    
-    private function __construct() {
-        throw new Exception("Can't get an instance of Constants");
+    if ($Notebooks->addNewNotebook($notebookNo, $reviewer, $comments)) {
+        $jsonResponse['status'] = "success";
+    } else {
+        $jsonResponse['status'] = "fail";
     }
 
+    echo json_encode($jsonResponse);
+} else {
+    $Functions->phpRedirect('');
 }
+?>

@@ -1,7 +1,8 @@
 <?php
+
 /* ===================================================================================== */
 /* Copyright 2016 Engin Yapici <engin.yapici@gmail.com>                                  */
-/* Created on 08/03/2016                                                                 */
+/* Created on 08/22/2016                                                                 */
 /* Last modified on 08/22/2016                                                           */
 /* ===================================================================================== */
 
@@ -29,25 +30,36 @@
 /* THE SOFTWARE.                                                                         */
 /* ===================================================================================== */
 
-final class Constants {
+require_once('../private/include/include.php');
 
-    // Database details
-    const DB_SERVER = 'localhost';
-    const DB_USER = 'nrm_user';
-    const DB_PASS = 'L0m)vLP*4Hw$jHS_1I@Wt';
-    const NRM_DB_NAME = 'nrt_database';
-    const OMS_DB_NAME = 'oms_database';
-    
-    // Domain name
-    const DOMAIN_NAME = 'www.example.com';
-    const DOMAIN_NAME_HTTP = 'http://www.example.com';
-    const DOMAIN_EMAIL_EXT = 'example.com';
-    
-    // Webmaster E-mail
-    const WEBMASTER_EMAIL = 'engin.yapici@example.com';
-    
-    private function __construct() {
-        throw new Exception("Can't get an instance of Constants");
-    }
-
+if ($Session->isSessionValid()) {
+    $Functions->phpRedirect('home');
 }
+?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html>
+    <head>
+        <title>Notebook Review Tracker</title>
+        <?php
+        require_once ('include_references.php');
+        ?>
+    </head>
+
+    <body>
+        <div id="gray-out-div"></div>
+        <img id="progress-bar" src="images/progress-bar.gif"/>
+        <?php require_once (PRIVATE_PATH . 'require/header.php'); ?>      
+        <div id="login-main-body-wrapper">
+            <h1>Log In</h1>
+            <div><input id="email" type="text" placeholder="E-mail Address" maxlength="111"/></div>
+            <div><input id="password" type="password" placeholder="Password"/></div>
+            <div><a class="button" onclick="Login.loginUser()">Submit</a></div>
+        </div>
+        <div><a class='text-only-button' href="/register">Don't have an account? Register here</a></div>
+        <div><a class='text-only-button' href="/forgot-password">Forgot password?</a></div>
+        <div class="error-div" id="login-error-div"></div>
+    </body>
+</html>
+

@@ -2,7 +2,7 @@
 /* ===================================================================================== */
 /* Copyright 2016 Engin Yapici <engin.yapici@gmail.com>                                  */
 /* Created on 08/04/2016                                                                 */
-/* Last modified on 08/05/2016                                                           */
+/* Last modified on 08/22/2016                                                           */
 /* ===================================================================================== */
 
 /* ===================================================================================== */
@@ -29,6 +29,9 @@
 /* THE SOFTWARE.                                                                         */
 /* ===================================================================================== */
 
+/** @var Session $Session */
+$Session = new Session();
+
 /** @var Functions $Functions */
 $Functions = new Functions();
 
@@ -39,5 +42,5 @@ $Users = new Users($Database, $Functions);
 $Statuses = new Statuses($Database, $Functions);
 
 /** @var Notebooks $Notebooks */
-$Notebooks = new Notebooks($Database, $Functions);
+$Notebooks = new Notebooks($Database, $Functions, $Statuses);
 

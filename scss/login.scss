@@ -1,0 +1,42 @@
+@import "_variables.scss";
+
+input {
+    padding: 10px;
+    @include border-radius($default-border-radius);
+}
+
+#login-main-body-wrapper {
+    max-width: 300px;
+    min-width: 250px;
+    width: auto;
+    height: auto;
+    margin: 100px auto 0px auto;
+    padding: 0 0 20px 0px;
+    background-color: $white-color;
+    @include border-radius($default-border-radius);
+    @include box-shadow(0, 0, 10px, rgba(0,0,0,0.15));
+
+    input[type="text"],
+    input[type="password"] {
+        -webkit-transition: all 0.30s ease-in-out;
+        -moz-transition: all 0.30s ease-in-out;
+        -ms-transition: all 0.30s ease-in-out;
+        -o-transition: all 0.30s ease-in-out;
+        outline: none;
+        box-sizing: border-box;
+        -webkit-box-sizing: border-box;
+        -moz-box-sizing: border-box;
+        width: 90%;
+        background: $white-color;
+        margin-bottom: 10px;
+        border: 1px solid #cccccc;
+        padding: 10px;
+        color: $main-text-color;
+        font: 95%;
+
+        &:focus {
+            box-shadow: 0 0 5px $main-color;
+            border: 1px solid $main-color;
+        }
+    }
+}

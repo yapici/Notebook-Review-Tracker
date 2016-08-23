@@ -82,4 +82,3 @@ $jsonFile = fopen(BUILD_PATH . 'files.json', 'w');
 fwrite($jsonFile, json_encode($filesArray, JSON_UNESCAPED_SLASHES));
 fclose($jsonFile);
 ?>
-

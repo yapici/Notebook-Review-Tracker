@@ -1,8 +1,9 @@
 <?php
+
 /* ===================================================================================== */
 /* Copyright 2016 Engin Yapici <engin.yapici@gmail.com>                                  */
 /* Created on 08/04/2016                                                                 */
-/* Last modified on 08/21/2016                                                           */
+/* Last modified on 08/22/2016                                                           */
 /* ===================================================================================== */
 
 /* ===================================================================================== */
@@ -30,6 +31,7 @@
 /* ===================================================================================== */
 
 class Functions {
+
     /** @param array $array 
      *  @return array $sanitizedArray
      */
@@ -75,6 +77,45 @@ class Functions {
 
     /* /  ************************************************************************************************* */
     /* /  ****************************** -- Date Conversion Functions -- ********************************** */
+
+
+
+    /* #################################### -- Redirect Functions -- ###################################### */
+    /* #################################################################################################### */
+
+    public function phpRedirect($target) {
+        header("Location: /$target");
+        exit;
+    }
+
+    public function jsRedirect($target) {
+        $script = '<script type="text/javascript">';
+        $script .= 'window.location = "' . $target . '"';
+        $script .= '</script>';
+
+        echo $script;
+    }
+
+    /* /  ************************************************************************************************* */
+    /* /  ********************************* -- Redirect Functions -- ************************************** */
+
+    public function getDomainFromEmail($email) {
+        $domain = substr(strrchr($email, "@"), 1);
+        return $domain;
+    }
+
+
+    // This function is used in 'public/ajax/add-new-item-action.php'.
+    /** @return array $sanitizedArray
+     */
+    public function sanitizePostedVariables() {
+        $sanitizedArray = array();
+        foreach ($_POST as $key => $value) {
+            $this->logError("sanitizePostedVariables", $value);
+            $sanitizedArray[$key] = htmlspecialchars(trim(filter_input(INPUT_POST, $key)));
+        }
+        return $sanitizedArray;
+    }
     
     /**
      *  @param string $title
@@ -85,6 +126,7 @@ class Functions {
         error_log($error_msg, 3, "php.log");
         error_log("\n$title\n", 3, "php.log");
     }
+
 }
 
 ?>

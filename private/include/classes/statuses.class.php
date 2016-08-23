@@ -3,7 +3,7 @@
 /* ===================================================================================== */
 /* Copyright 2016 Engin Yapici <engin.yapici@gmail.com>                                  */
 /* Created on 08/05/2016                                                                 */
-/* Last modified on 08/05/2016                                                           */
+/* Last modified on 08/21/2016                                                           */
 /* ===================================================================================== */
 
 /* ===================================================================================== */
@@ -69,18 +69,24 @@ class Statuses {
         return $this->statusesArray;
     }
 
-    public function populateStatusesforTable() {
-        $tableBody = '';
+    public function populateStatusesforTable($status) {
+        $html = '';
         if (!empty($this->statusesArray)) {
+            $html .= '<select>';
             foreach ($this->statusesArray as $statusId => $status) {
-                $userEmail = $user['email'];
+                $statusName = $status['status_name'];
+                if ($statusName == $status) {
+                    $html .= "<option selected value='$statusId'>$statusName</option>";
+                } else {
+                    $html .= "<option value='$statusId'>$statusName</option>";
+                }
             }
+            $html .= '</select>';
         } else {
-            $tableBody = "<tr><td colspan='4'>There are no notebook </td></tr>";
+            $html = $status;
         }
+        return $html;
     }
 
 }
 ?>
-
-

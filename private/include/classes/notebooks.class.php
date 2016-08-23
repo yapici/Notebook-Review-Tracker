@@ -1,8 +1,9 @@
 <?php
+
 /* ===================================================================================== */
 /* Copyright 2016 Engin Yapici <engin.yapici@gmail.com>                                  */
 /* Created on 08/05/2016                                                                 */
-/* Last modified on 08/21/2016                                                           */
+/* Last modified on 08/22/2016                                                           */
 /* ===================================================================================== */
 
 /* ===================================================================================== */
@@ -33,6 +34,7 @@ class Notebooks {
 
     private $Database;
     private $Functions;
+    private $Statuses;
 
     /** @var array $usersArray */
     public $notebooksArray;
@@ -40,10 +42,12 @@ class Notebooks {
     /**
      * @param Database $database
      * @param Functions $functions
+     * @param Statuses $statuses
      */
-    function __construct($database, $functions) {
+    function __construct($database, $functions, $statuses) {
         $this->Database = $database;
         $this->Functions = $functions;
+        $this->Statuses = $statuses;
         $this->populateArray();
     }
 
@@ -61,7 +65,7 @@ class Notebooks {
                 . "JOIN %s.users AS u1 ON (n.author_id = u1.id) "
                 . "JOIN %s.users AS u2 ON (n.reviewer_id = u2.id) "
                 . "JOIN status s ON (n.status_id = s.id)";
-        
+
         $sql = sprintf($query_string, Constants::OMS_DB_NAME, Constants::OMS_DB_NAME);
         $stmt = $this->Database->prepare($sql);
         $stmt->execute();
@@ -82,21 +86,24 @@ class Notebooks {
         return $this->notebooksArray;
     }
 
-    public function populateNotebooksTable() {
+    public function populateAssignedNotebooksTable() {
         $tableBody = '';
         if (!empty($this->notebooksArray)) {
             foreach ($this->notebooksArray as $id => $notebook) {
-                $notebookNo = $notebook['notebook_no'];
-                $assigedDate = $this->Functions->convertMysqlDateToPhpDate($notebook['created_date']);
-                $status = $notebook['status_name'];
-                $author = $notebook['author_username'];
-                
-                $tableBody .= "<tr id=$id>";
-                $tableBody .= "<td>$notebookNo</td>";
-                $tableBody .= "<td>$assigedDate</td>";
-                $tableBody .= "<td>$status</td>";
-                $tableBody .= "<td>$author</td>";
-                $tableBody .= "</tr>";
+                if ($notebook['author_id'] != $_SESSION['id']) {
+                    $notebookNo = $notebook['notebook_no'];
+                    $assigedDate = $this->Functions->convertMysqlDateToPhpDate($notebook['created_date']);
+                    $status = $notebook['status_name'];
+                    $author = $notebook['author_username'];
+                    $statusDropDown = $this->Statuses->populateStatusesforTable($status);
+
+                    $tableBody .= "<tr id=$id>";
+                    $tableBody .= "<td><span>$notebookNo</span></td>";
+                    $tableBody .= "<td><span>$assigedDate</span></td>";
+                    $tableBody .= "<td>$statusDropDown</td>";
+                    $tableBody .= "<td><span>$author</span></td>";
+                    $tableBody .= "</tr>";
+                }
             }
         } else {
             $tableBody = "<tr><td colspan='4'>There are no notebooks</td></tr>";
@@ -104,7 +111,45 @@ class Notebooks {
         echo $tableBody;
     }
 
+    public function populateMyNotebooksTable() {
+        $tableBody = '';
+        if (!empty($this->notebooksArray)) {
+            foreach ($this->notebooksArray as $id => $notebook) {
+                if ($notebook['author_id'] == $_SESSION['id']) {
+                    $notebookNo = $notebook['notebook_no'];
+                    $assigedDate = $this->Functions->convertMysqlDateToPhpDate($notebook['created_date']);
+                    $status = $notebook['status_name'];
+                    $reviewer = $notebook['reviewer_username'];
+
+                    $tableBody .= "<tr id=$id>";
+                    $tableBody .= "<td><span>$notebookNo</span></td>";
+                    $tableBody .= "<td><span>$status</span></td>";
+                    $tableBody .= "<td><span>$reviewer</span></td>";
+                    $tableBody .= "<td><span>$assigedDate</span></td>";
+                    $tableBody .= "</tr>";
+                }
+            }
+        } else {
+            $tableBody = "<tr><td colspan='4'>There are no notebooks</td></tr>";
+        }
+        echo $tableBody;
+    }
+
+    public function addNewNotebook($notebookNo, $assignedTo, $comments) {
+        $sql = "INSERT INTO notebooks (notebook_no, author_id, reviewer_id, last_modified_date, comments) ";
+        $sql .= "SELECT :notebook_no, :author_id, id, :currentDate, :comments FROM %s.users WHERE username = :username";
+
+        $query = sprintf($sql, Constants::OMS_DB_NAME);
+
+        $currentDate = date("Y-m-d H:i:s");
+        $stmt = $this->Database->prepare($query);
+        $stmt->bindValue(':notebook_no', $notebookNo, PDO::PARAM_STR);
+        $stmt->bindValue(':author_id', "1", PDO::PARAM_STR);
+        $stmt->bindValue(':currentDate', $currentDate, PDO::PARAM_STR);
+        $stmt->bindValue(':comments', $comments, PDO::PARAM_STR);
+        $stmt->bindValue(':username', $assignedTo, PDO::PARAM_STR);
+        return $stmt->execute();
+    }
+
 }
 ?>
-
-

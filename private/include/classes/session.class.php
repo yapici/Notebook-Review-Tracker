@@ -1,7 +1,8 @@
 <?php
+
 /* ===================================================================================== */
 /* Copyright 2016 Engin Yapici <engin.yapici@gmail.com>                                  */
-/* Created on 08/03/2016                                                                 */
+/* Created on 08/22/2016                                                                 */
 /* Last modified on 08/22/2016                                                           */
 /* ===================================================================================== */
 
@@ -29,25 +30,88 @@
 /* THE SOFTWARE.                                                                         */
 /* ===================================================================================== */
 
-final class Constants {
-
-    // Database details
-    const DB_SERVER = 'localhost';
-    const DB_USER = 'nrm_user';
-    const DB_PASS = 'L0m)vLP*4Hw$jHS_1I@Wt';
-    const NRM_DB_NAME = 'nrt_database';
-    const OMS_DB_NAME = 'oms_database';
+class Session {
     
-    // Domain name
-    const DOMAIN_NAME = 'www.example.com';
-    const DOMAIN_NAME_HTTP = 'http://www.example.com';
-    const DOMAIN_EMAIL_EXT = 'example.com';
-    
-    // Webmaster E-mail
-    const WEBMASTER_EMAIL = 'engin.yapici@example.com';
-    
-    private function __construct() {
-        throw new Exception("Can't get an instance of Constants");
+    function __construct() {
+        session_start();
     }
 
+    function endSession() {
+        session_unset();
+        session_destroy();
+    }
+
+    function requestIpMatchesSession() {
+        if (!isset($_SESSION['ip']) || !isset($_SERVER['REMOTE_ADDR'])) {
+            return false;
+        }
+        if ($_SESSION['ip'] === $_SERVER['REMOTE_ADDR']) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+    
+    function requestUserAgentMatchesSession() {
+        if (!isset($_SESSION['user_agent']) || !isset($_SERVER['HTTP_USER_AGENT'])) {
+            return false;
+        }
+        if ($_SESSION['user_agent'] === $_SERVER['HTTP_USER_AGENT']) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    function lastLoginIsRecent() {
+        $maxElapsed = 24 * 60 * 60; // 1 day
+        if (!isset($_SESSION['last_login'])) {
+            $this->afterSuccessfulLogout();
+            return false;
+        }
+        if (($_SESSION['last_login'] + $maxElapsed) >= time()) {
+            $_SESSION['last_login'] = time();
+            return true;
+        } else {
+            $this->afterSuccessfulLogout();
+            return false;
+        }
+    }
+
+    function isSessionValid() {
+        $checkIp = true;
+        $checkUserAgent = true;
+        $checkLastLogin = true;
+
+        if ($checkIp && !$this->requestIpMatchesSession()) {
+            return false;
+        }
+        if ($checkUserAgent && !$this->requestUserAgentMatchesSession()) {
+            return false;
+        }
+        if ($checkLastLogin && !$this->lastLoginIsRecent()) {
+            return false;
+        }
+        return true;
+    }
+
+    function isLoggedIn() {
+        return (isset($_SESSION['logged_in']) && $_SESSION['logged_in']);
+    }
+
+    function afterSuccessfulLogin() {
+        session_regenerate_id();
+
+        $_SESSION['logged_in'] = true;
+
+        $_SESSION['ip'] = $_SERVER['REMOTE_ADDR'];
+        $_SESSION['user_agent'] = $_SERVER['HTTP_USER_AGENT'];
+        $_SESSION['last_login'] = time();
+    }
+
+    function afterSuccessfulLogout() {
+        $_SESSION['logged_in'] = false;
+        $this->endSession();
+    }
 }
+?>

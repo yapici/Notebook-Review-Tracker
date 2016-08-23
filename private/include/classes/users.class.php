@@ -1,8 +1,9 @@
 <?php
+
 /* ===================================================================================== */
 /* Copyright 2016 Engin Yapici <engin.yapici@gmail.com>                                  */
 /* Created on 08/04/2016                                                                 */
-/* Last modified on 08/05/2016                                                           */
+/* Last modified on 08/22/2016                                                           */
 /* ===================================================================================== */
 
 /* ===================================================================================== */
@@ -71,8 +72,9 @@ class Users {
     /**
      * Echoes the 'select' dropdown list of active users.
      */
-    public function populateUsersDropdown() {
-        $html = '<select>';
+    public function populateUsersDropdown($id) {
+        $html = "<select id='$id'>";
+        $html .= "<option disabled selected>Reviewer</option>";
         foreach ($this->usersArray as $userId => $user) {
             if ($user['account_status'] == '1') {
                 $userName = $user['username'];
@@ -82,7 +84,6 @@ class Users {
         $html .= "</select>";
         echo $html;
     }
+
 }
 ?>
-
-
