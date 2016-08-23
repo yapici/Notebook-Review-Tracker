@@ -30,6 +30,10 @@
 /* ===================================================================================== */
 
 require_once('../private/include/include.php');
+
+if (!$Session->isSessionValid()) {
+    $Functions->phpRedirect('login');
+}
 ?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
     "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
@@ -46,6 +50,9 @@ require_once('../private/include/include.php');
         <div id="gray-out-div"></div>
         <img id="progress-bar" src="images/progress-bar.gif"/>
         <div id="home-main-body-wrapper">
+            <span id='button-holder-span'>
+                <span title='Log Out' onclick='Core.logoutAction();'><img class='absolute-buttons' id='logout-button' src='images/logout-icon.png'></img></span>
+            </span>
             <div id="add-new-notebook-items-wrapper">
                 <div class="heading" onclick="AddNewItem.toggleAddNewItemView()">Add New Notebook for Review</div>
                 <div id="add-new-notebook-items-inner-wrapper">
@@ -111,6 +118,7 @@ require_once('../private/include/include.php');
                     </tbody>
                 </table>
             </div>
+            <div id="main-error-div" class="error-div"></div>
         </div>
     </body>
 </html>

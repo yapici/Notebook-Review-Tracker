@@ -1,8 +1,9 @@
 <?php
+
 /* ===================================================================================== */
 /* Copyright 2016 Engin Yapici <engin.yapici@gmail.com>                                  */
-/* Created on 08/03/2016                                                                 */
-/* Last modified on 08/03/2016                                                           */
+/* Created on 08/22/2016                                                                 */
+/* Last modified on 08/22/2016                                                           */
 /* ===================================================================================== */
 
 /* ===================================================================================== */
@@ -29,12 +30,13 @@
 /* THE SOFTWARE.                                                                         */
 /* ===================================================================================== */
 
-require_once('../private/include/include.php');
-
-if ($Session->isSessionValid()) {
-    $Functions->phpRedirect('home');
+require('../../private/include/include.php');
+// Below if statement prevents direct access to the file. It can only be accessed through "AJAX".
+if (filter_input(INPUT_SERVER, 'HTTP_X_REQUESTED_WITH')) {
+    $Session->afterSuccessfulLogout();
+    $jsonResponse['status'] = 'success';
+    echo json_encode($jsonResponse);
 } else {
-    $Functions->phpRedirect('login');
+    $Functions->phpRedirect('');
 }
 ?>
-
