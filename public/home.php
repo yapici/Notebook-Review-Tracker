@@ -2,7 +2,7 @@
 /* ===================================================================================== */
 /* Copyright 2016 Engin Yapici <engin.yapici@gmail.com>                                  */
 /* Created on 08/03/2016                                                                 */
-/* Last modified on 08/22/2016                                                           */
+/* Last modified on 08/23/2016                                                           */
 /* ===================================================================================== */
 
 /* ===================================================================================== */
@@ -93,6 +93,7 @@ if (!$Session->isSessionValid()) {
             </div>
             <div id="main-error-div" class="error-div"></div>
         </div>
+        <div id="invisible-element"></div>
     </body>
 </html>
 

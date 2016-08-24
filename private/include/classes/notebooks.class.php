@@ -3,7 +3,7 @@
 /* ===================================================================================== */
 /* Copyright 2016 Engin Yapici <engin.yapici@gmail.com>                                  */
 /* Created on 08/05/2016                                                                 */
-/* Last modified on 08/22/2016                                                           */
+/* Last modified on 08/23/2016                                                           */
 /* ===================================================================================== */
 
 /* ===================================================================================== */
@@ -58,6 +58,7 @@ class Notebooks {
                 . "n.reviewer_id, "
                 . "n.status_id, "
                 . "n.created_date, "
+                . "n.comments, "
                 . "u1.username AS author_username, "
                 . "u2.username AS reviewer_username, "
                 . "s.status_name "
@@ -86,8 +87,23 @@ class Notebooks {
         return $this->notebooksArray;
     }
 
+    private function prepareCommentBubble($comments) {
+        $html = "<span class='comment-bubble'>";
+        $html .= "<span class='heading'>Comments";
+        $html .= "<span class='close-popup-button' onclick='CommentsBubble.hide()'></span>";
+        $html .= "</span>";
+        $html .= "<div id='comment-bubble-inner-wrapper'>";
+        $html .= "<p>" . $comments . "</p>";
+        $html .= "<textarea></textarea>";
+        $html .= "<div id='comment-bubble-button-wrapper'><a class='button'>Send</a></div>";
+        $html .= "</div>";
+        $html .= "</span>";
+        return $html;
+    }
+
     public function populateAssignedNotebooksTable() {
         $tableBody = '';
+
         if (!empty($this->notebooksArray)) {
             foreach ($this->notebooksArray as $id => $notebook) {
                 if ($notebook['author_id'] != $_SESSION['id']) {
@@ -95,14 +111,16 @@ class Notebooks {
                     $assigedDate = $this->Functions->convertMysqlDateToPhpDate($notebook['created_date']);
                     $status = $notebook['status_name'];
                     $author = $notebook['author_username'];
+                    $commentBubble = $this->prepareCommentBubble($notebook['comments']);
                     $statusDropDown = $this->Statuses->populateStatusesforTable($status);
 
-                    $tableBody .= "<tr id=$id>";
-                    $tableBody .= "<td><span>$notebookNo</span></td>";
+                    $tableBody .= "<tr id='$id'>";
+                    $tableBody .= "<td><span>$notebookNo</span>$commentBubble</td>";
                     $tableBody .= "<td><span>$assigedDate</span></td>";
                     $tableBody .= "<td>$statusDropDown</td>";
                     $tableBody .= "<td><span>$author</span></td>";
                     $tableBody .= "</tr>";
+                    $zIndex--;
                 }
             }
         } else {
@@ -113,6 +131,7 @@ class Notebooks {
 
     public function populateMyNotebooksTable() {
         $tableBody = '';
+
         if (!empty($this->notebooksArray)) {
             foreach ($this->notebooksArray as $id => $notebook) {
                 if ($notebook['author_id'] == $_SESSION['id']) {
@@ -120,9 +139,10 @@ class Notebooks {
                     $assigedDate = $this->Functions->convertMysqlDateToPhpDate($notebook['created_date']);
                     $status = $notebook['status_name'];
                     $reviewer = $notebook['reviewer_username'];
+                    $commentBubble = $this->prepareCommentBubble($notebook['comments']);
 
-                    $tableBody .= "<tr id=$id>";
-                    $tableBody .= "<td><span>$notebookNo</span></td>";
+                    $tableBody .= "<tr id='$id'>";
+                    $tableBody .= "<td><span>$notebookNo</span>$commentBubble</td>";
                     $tableBody .= "<td><span>$status</span></td>";
                     $tableBody .= "<td><span>$reviewer</span></td>";
                     $tableBody .= "<td><span>$assigedDate</span></td>";
@@ -152,4 +172,5 @@ class Notebooks {
     }
 
 }
+
 ?>

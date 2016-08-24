@@ -1,6 +1,102 @@
 $(document).ready(function () {
     AddNewItem.selectChangeListener();
+    CommentsBubble.clickListeners();
 });
+
+var CommentsBubble = {
+    originalTdZ: "1",
+    bubbleHeight: "",
+    td: "",
+    clickListeners: function () {
+        var that = this;
+
+        $(".notebooks-table").on("click", ".comment-bubble", function (e) {
+            e.stopPropagation();
+        });
+
+        $(".notebooks-table").on("click", "select", function (e) {
+            e.stopPropagation();
+        });
+
+        $(document).on("click", "#gray-out-div", function () {
+            that.hide();
+        });
+
+        $(".notebooks-table").on("click", "tr", function () {
+            that.td = $(this);
+            var td = that.td;
+            var currentZ = td.find("td").css("z-index");
+            var bubble = td.find(".comment-bubble");
+            var radius = td.closest("table").css("border-radius");
+
+            if (currentZ !== "9999") {
+                that.originalTdZ = currentZ;
+                td.find("td").css("z-index", "9999");
+                $("#gray-out-div").fadeIn();
+                bubble.show().css("z-index", "9999");
+
+                that.bubbleHeight = bubble.height();
+                bubble.css("height", "0");
+                bubble.animate({
+                    width: td.width(),
+                    height: that.bubbleHeight,
+                    opacity: "1"
+                }, 500);
+
+                td.find("td:first-child").animate({
+                    borderTopLeftRadius: radius,
+                    borderBottomLeftRadius: radius
+                });
+
+                td.find("td:last-child").animate({
+                    borderTopRightRadius: radius,
+                    borderBottomRightRadius: radius
+                });
+            } else {
+                that.hide();
+            }
+        });
+    },
+    hide: function () {
+        var that = this;
+        var td = that.td;
+        var bubble = td.find(".comment-bubble");
+        $("#gray-out-div").fadeOut();
+
+        bubble.animate({
+            width: "0",
+            height: "0",
+            opacity: "0",
+            minHeight: "0px"
+        }, 500).promise().done(function () {
+            bubble.hide().css({
+                zIndex: that.originalTdZ,
+                height: that.bubbleHeight
+            });
+            td.find("td").css("z-index", that.originalTdZ);
+        });
+
+        if (td.is(':last-child')) {
+            td.find("td:first-child").animate({
+                borderTopLeftRadius: 0
+            });
+
+            td.find("td:last-child").animate({
+                borderTopRightRadius: 0
+            });
+        } else {
+            td.find("td:first-child").animate({
+                borderTopLeftRadius: 0,
+                borderBottomLeftRadius: 0
+            });
+
+            td.find("td:last-child").animate({
+                borderTopRightRadius: 0,
+                borderBottomRightRadius: 0
+            });
+        }
+    }
+};
 
 var AddNewItem = {
     toggleAddNewItemView: function () {
@@ -81,6 +177,7 @@ var AddNewItem = {
         $("#gray-out-div").fadeIn();
     },
     closePopup: function () {
+        $("#add-new-item-error-div").html("");
         $("#add-new-notebook-items-wrapper").fadeOut();
         $("#gray-out-div").fadeOut();
     },
