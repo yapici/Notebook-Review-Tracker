@@ -7,6 +7,7 @@ var CommentsBubble = {
     originalTdZ: "1",
     bubbleHeight: "",
     td: "",
+    isVisible: false,
     clickListeners: function () {
         var that = this;
 
@@ -30,6 +31,7 @@ var CommentsBubble = {
             var radius = td.closest("table").css("border-radius");
 
             if (currentZ !== "9999") {
+                that.isVisible = false;
                 that.originalTdZ = currentZ;
                 td.find("td").css("z-index", "9999");
                 $("#gray-out-div").fadeIn();
@@ -59,6 +61,7 @@ var CommentsBubble = {
     },
     hide: function () {
         var that = this;
+        that.isVisible = true;
         var td = that.td;
         var bubble = td.find(".comment-bubble");
         $("#gray-out-div").fadeOut();

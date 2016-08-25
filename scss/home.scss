@@ -4,37 +4,14 @@
     padding: 20px;
     position: relative;
 
-    #button-holder-span {
+    #version-span {
         position: absolute;
-        display: inline-block;
-        left: 16px;
-        top: 0;
-
-        .absolute-buttons {
-            position: relative;
-            width: 20px;
-            height: 20px;
-            top: 16px;
-            padding: 8px 9px;
-            vertical-align: top;
-            display: inline-block;
-            cursor: pointer;
-            color: $white-color;
-            background: $main-color;
-            border-bottom: 2px solid $dark-main-color;
-            overflow: hidden;
-            z-index: 7;
-            @include border-radius($default-border-radius);
-            box-sizing: content-box;
-
-            &:hover {
-                background: $dark-main-color;
-            }
-        }
-
-        #logout-button {
-            padding: 8px 11px 8px 8px;
-        }
+        left: 4px;
+        top: 4px;
+        padding: 0px 4px;
+        font-size: 0.7em;
+        opacity: 0.4;
+        @extend .noselect;
     }
 
     .notebooks-table {

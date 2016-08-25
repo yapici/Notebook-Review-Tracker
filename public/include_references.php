@@ -2,7 +2,7 @@
 /* ===================================================================================== */
 /* Copyright 2016 Engin Yapici <engin.yapici@gmail.com>                                  */
 /* Created on 08/03/2016                                                                 */
-/* Last modified on 08/22/2016                                                           */
+/* Last modified on 08/24/2016                                                           */
 /* ===================================================================================== */
 
 /* ===================================================================================== */
@@ -34,6 +34,7 @@
 <script src="js/jquery-ui-1.12.0.min.js"></script>
 <script src="js/main.js"></script>
 <link href="css/jquery-ui-1.12.0.min.css" rel="stylesheet">
+<link href="css/balloon.css" rel="stylesheet">
 <link href="css/main.css" rel="stylesheet">
 <link rel="icon" type="image/png" href="/images/favicon.png" sizes="96x96" />
 <?php

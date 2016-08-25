@@ -2,7 +2,7 @@
 /* ===================================================================================== */
 /* Copyright 2016 Engin Yapici <engin.yapici@gmail.com>                                  */
 /* Created on 08/03/2016                                                                 */
-/* Last modified on 08/04/2016                                                           */
+/* Last modified on 08/24/2016                                                           */
 /* ===================================================================================== */
 
 /* ===================================================================================== */
@@ -28,13 +28,16 @@
 /* OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN             */
 /* THE SOFTWARE.                                                                         */
 /* ===================================================================================== */
-    $file = BUILD_PATH . "build";
+$file = BUILD_PATH . "build";
 ?>
 
 <div class='header'>
     <a href="/"><img id='header-logo' src='images/logo.png'></a>
+    <span id='button-holder-span'>
+        <span data-balloon="Add New Item" data-balloon-pos="down" class='absolute-buttons' onclick='AddNewItem.showPopup();'><img src='images/plus-icon.png'></img></span>
+        <span data-balloon="Log Out" data-balloon-pos="down" class='absolute-buttons' onclick='Core.logoutAction();'><img id='logout-button' src='images/logout-icon.png'></img></span>
+    </span>
     <h2>Notebook Review Tracker</h2>
-    <span id='version-span'>Version 1.0.0.<?php echo file_get_contents($file);?></span>
 </div>
 
 
