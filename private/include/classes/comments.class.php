@@ -1,7 +1,8 @@
 <?php
+
 /* ===================================================================================== */
 /* Copyright 2016 Engin Yapici <engin.yapici@gmail.com>                                  */
-/* Created on 08/04/2016                                                                 */
+/* Created on 08/27/2016                                                                 */
 /* Last modified on 08/27/2016                                                           */
 /* ===================================================================================== */
 
@@ -29,21 +30,68 @@
 /* THE SOFTWARE.                                                                         */
 /* ===================================================================================== */
 
-/** @var Session $Session */
-$Session = new Session();
+class Comments {
 
-/** @var Functions $Functions */
-$Functions = new Functions();
+    private $Database;
+    private $Functions;
 
-/** @var Users $Users */
-$Users = new Users($Database, $Functions);
+    /** @var array $commentsArray */
+    public $commentsArray;
 
-/** @var Statuses $Statuses */
-$Statuses = new Statuses($Database, $Functions);
+    /**
+     * @param Database $database
+     * @param Functions $functions
+     */
+    function __construct($database, $functions) {
+        $this->Database = $database;
+        $this->Functions = $functions;
+        $this->populateArray();
+    }
 
-/** @var Comments $Comments */
-$Comments = new Comments($Database, $Functions);
+    private function populateArray() {
+        $sql = sprintf("SELECT c.id, c.notebook_id, c.sender_id, c.datetime, c.comment, u.username FROM comments c JOIN %s.users u ON (c.sender_id = u.id)", Constants::OMS_DB_NAME);
+        $stmt = $this->Database->prepare($sql);
+        $stmt->execute();
+        while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
+            $sanitizedArray = $this->Functions->sanitizeArray($row);
+            $this->commentsArray[$sanitizedArray['notebook_id']][$sanitizedArray['id']] = $sanitizedArray;
+        }
+    }
 
-/** @var Notebooks $Notebooks */
-$Notebooks = new Notebooks($Database, $Functions, $Statuses, $Comments);
+    public function refreshArray() {
+        $this->populateArray();
+    }
 
+    /**
+     * @return array $commentsArray
+     */
+    public function getCommentsArray() {
+        return $this->commentsArray;
+    }
+
+    /**
+     * @param string $notebookId
+     * @return array An array of comments for the provided notebook id
+     */
+    public function getCommentsWithId($notebookId) {
+        return $this->commentsArray[$notebookId];
+    }
+
+    /**
+     * @param string $notebookId
+     * @param string $comment
+     * @param string $senderId
+     * @return boolean Result of the PDO SQL statement execution. Returns true if successful.
+     */
+    public function addComment($notebookId, $comment, $senderId) {
+        $sql = sprintf("INSERT INTO comments (notebook_id, sender_id, comment) VALUES (:notebookId, :senderId, :comment)");
+        $stmt = $this->Database->prepare($sql);
+        $stmt->bindValue(':notebookId', $notebookId, PDO::PARAM_STR);
+        $stmt->bindValue(':senderId', $senderId, PDO::PARAM_STR);
+        $stmt->bindValue(':comment', $comment, PDO::PARAM_STR);
+        return $stmt->execute();
+    }
+
+}
+
+?>

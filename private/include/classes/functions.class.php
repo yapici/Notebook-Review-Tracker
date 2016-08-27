@@ -3,7 +3,7 @@
 /* ===================================================================================== */
 /* Copyright 2016 Engin Yapici <engin.yapici@gmail.com>                                  */
 /* Created on 08/04/2016                                                                 */
-/* Last modified on 08/22/2016                                                           */
+/* Last modified on 08/27/2016                                                           */
 /* ===================================================================================== */
 
 /* ===================================================================================== */
@@ -74,6 +74,14 @@ class Functions {
         }
         return $convertedDate;
     }
+    public function convertMysqlDateToDateTime($date) {
+        if ($date == "0000-00-00" || $date == "0000-00-00 00:00:00") {
+            $date = "N/A";
+        } else {
+            $date = date('d-M-Y g:i a', strtotime($date));
+        }
+        return $date;
+    }
 
     /* /  ************************************************************************************************* */
     /* /  ****************************** -- Date Conversion Functions -- ********************************** */
@@ -104,7 +112,6 @@ class Functions {
         return $domain;
     }
 
-
     // This function is used in 'public/ajax/add-new-item-action.php'.
     /** @return array $sanitizedArray
      */
@@ -116,14 +123,18 @@ class Functions {
         }
         return $sanitizedArray;
     }
-    
+
     /**
      *  @param string $title
-     *  @param string $error_msg
+     *  @param string or array $error_msg
      */
     public function logError($title, $error_msg) {
         error_log("\n$title\n", 3, "php.log");
-        error_log($error_msg, 3, "php.log");
+        if (is_array($error_msg)) {
+            error_log(print_R($error_msg,TRUE), 3, "php.log");
+        } else {
+            error_log($error_msg, 3, "php.log");
+        }
         error_log("\n$title\n", 3, "php.log");
     }
 

@@ -5,6 +5,7 @@ $(document).ready(function () {
 var Core = {
     toast: $("#main-toast-wrapper"),
     toastTimeout: "",
+    ajaxKeepGrayOut: false,
     showToast: function (message, duration) {
         duration = typeof duration !== 'undefined' ? duration : 3000;
         var toast = this.toast;
@@ -21,16 +22,16 @@ var Core = {
         this.toast.hide();
     },
     ajax: function (parameters, successCallback, doneCallback) {
+        var that = this;
         var grayOutDiv = $("#gray-out-div");
 
-        console.log(parameters.method);
-        console.log(parameters.data);
+        console.log("Core.ajax. Method: " + parameters.method + ", Data: ", parameters.data);
 
         grayOutDiv.css("z-index", "9999");
         grayOutDiv.show();
         ProgressBar.show();
 
-        this.resetErrorDiv($(parameters.errorDiv));
+        this.resetErrorDiv(parameters.errorDiv);
         $.ajax({
             url: "http://localhost:8888/" + parameters.url,
             type: parameters.method,
@@ -44,19 +45,21 @@ var Core = {
                 }
             },
             fail: function (json_response, textStatus, xhr) {
-                $(parameters.errorDiv).html("Something went wrong, please try again later.");
+                parameters.errorDiv.html("Something went wrong, please try again later.");
             },
             statusCode: {
                 500: function () { // Internal Server Error
-                    $(parameters.errorDiv).html("Something went wrong, please try again later.");
+                    parameters.errorDiv.html("Something went wrong, please try again later.");
                 },
                 408: function () { // Request Timeout
-                    $(parameters.errorDiv).html("Something went wrong, please try again later.");
+                    parameters.errorDiv.html("Something went wrong, please try again later.");
                 }
             }
         }).done(function () {
-            grayOutDiv.css("z-index", "999");
-            grayOutDiv.hide();
+            if (!that.ajaxKeepGrayOut) {
+                grayOutDiv.css("z-index", "999");
+                grayOutDiv.hide();
+            }
             ProgressBar.hide();
             try {
                 doneCallback();
@@ -98,7 +101,7 @@ var Core = {
             url: "ajax/logout.php",
             method: "POST",
             data: {},
-            errorDiv: "#main-error-div"
+            errorDiv: $("#main-error-div")
         };
 
         this.ajax(
@@ -146,10 +149,10 @@ var ProgressBar = {
 };
 
 jQuery.fn.center = function () {
-    this.css("position","absolute");
-    this.css("top", Math.max(0, (($(window).height() - $(this).outerHeight()) / 2) + 
-                                                $(window).scrollTop()) + "px");
-    this.css("left", Math.max(0, (($(window).width() - $(this).outerWidth()) / 2) + 
-                                                $(window).scrollLeft()) + "px");
+    this.css("position", "absolute");
+    this.css("top", Math.max(0, (($(window).height() - $(this).outerHeight()) / 2) +
+            $(window).scrollTop()) + "px");
+    this.css("left", Math.max(0, (($(window).width() - $(this).outerWidth()) / 2) +
+            $(window).scrollLeft()) + "px");
     return this;
 };

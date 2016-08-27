@@ -1,7 +1,8 @@
 <?php
+
 /* ===================================================================================== */
 /* Copyright 2016 Engin Yapici <engin.yapici@gmail.com>                                  */
-/* Created on 08/04/2016                                                                 */
+/* Created on 08/27/2016                                                                 */
 /* Last modified on 08/27/2016                                                           */
 /* ===================================================================================== */
 
@@ -29,21 +30,24 @@
 /* THE SOFTWARE.                                                                         */
 /* ===================================================================================== */
 
-/** @var Session $Session */
-$Session = new Session();
+require('../../private/include/include.php');
+// Below if statement prevents direct access to the file. It can only be accessed through "AJAX".
+if (filter_input(INPUT_SERVER, 'HTTP_X_REQUESTED_WITH')) {
+// Getting the parameters passed through AJAX
+    $sanitizedPostArray = $Functions->sanitizePostedVariables();
+    $notebookId = $sanitizedPostArray['id'];
+    $comment = $sanitizedPostArray['comment'];
+    $senderId = $_SESSION["id"];
+    
 
-/** @var Functions $Functions */
-$Functions = new Functions();
+    if ($Comments->addComment($notebookId, $comment, $senderId)) {
+        $jsonResponse['status'] = "success";
+    } else {
+        $jsonResponse['status'] = "fail";
+    }
 
-/** @var Users $Users */
-$Users = new Users($Database, $Functions);
-
-/** @var Statuses $Statuses */
-$Statuses = new Statuses($Database, $Functions);
-
-/** @var Comments $Comments */
-$Comments = new Comments($Database, $Functions);
-
-/** @var Notebooks $Notebooks */
-$Notebooks = new Notebooks($Database, $Functions, $Statuses, $Comments);
-
+    echo json_encode($jsonResponse);
+} else {
+    $Functions->phpRedirect('');
+}
+?>

@@ -35,6 +35,7 @@ class Notebooks {
     private $Database;
     private $Functions;
     private $Statuses;
+    private $Comments;
 
     /** @var array $usersArray */
     public $notebooksArray;
@@ -43,11 +44,13 @@ class Notebooks {
      * @param Database $database
      * @param Functions $functions
      * @param Statuses $statuses
+     * @param Comments $comments
      */
-    function __construct($database, $functions, $statuses) {
+    function __construct($database, $functions, $statuses, $comments) {
         $this->Database = $database;
         $this->Functions = $functions;
         $this->Statuses = $statuses;
+        $this->Comments = $comments;
         $this->populateArray();
     }
 
@@ -87,14 +90,35 @@ class Notebooks {
         return $this->notebooksArray;
     }
 
-    private function prepareCommentBubble($id, $comments) {
+    private function prepareCommentBubble($id) {
         $html = "<span class='comment-bubble'>";
-        $html .= "<span class='heading'>Comments";
-        $html .= "</span>";
-        $html .= "<div id='comment-bubble-inner-wrapper'>";
-        $html .= "<p>" . $comments . "</p>";
-        $html .= "<textarea id='comment-bubble-$id'></textarea>";
-        $html .= "<div id='comment-bubble-button-wrapper'><a class='button' onclick='CommentsBubble.addComment()'>Send</a></div>";
+        $html .= "<span class='heading'>Comments</span>";
+        $html .= "<div class='comment-bubble-inner-wrapper'>";
+        $html .= "<div class='error-div'>&nbsp;</div>";
+        $html .= "<div class='comment-elements-outer-outer-wrappper'>";
+        $html .= "<div class='comment-elements-outer-wrappper'>";
+
+        $commentsArray = $this->Comments->getCommentsWithId($id);
+        if (array_filter($commentsArray)) {
+            foreach ($commentsArray as $comment) {
+                $html .= "<p class='comment-elements-inner-wrapper'>";
+                if ($comment['sender_id'] == $_SESSION['id']) {
+                    $html .= "<span class='comment-username self'>" . $comment['username'] . ":</span>";
+                } else {
+                    $html .= "<span class='comment-username'>" . $comment['username'] . ":</span>";
+                }
+                $html .= "<span class='comment-message'>" . $comment['comment'] . "</span>";
+                $html .= "<span class='comment-datetime'>" . $this->Functions->convertMysqlDateToDateTime($comment['datetime']) . "</span>";
+                $html .= "</p>";
+            }
+        } else {
+            $html .= "<div style='color: #aaaaaa;'>No comments have been added so far</div>";
+        }
+        $html .= "</div>";
+        $html .= "</div>";
+
+        $html .= "<textarea class='comment-bubble-$id'></textarea>";
+        $html .= "<div class='comment-bubble-button-wrapper'><a class='button' onclick='CommentsBubble.addComment(this)'>Send</a></div>";
         $html .= "</div>";
         $html .= "</span>";
         return $html;
@@ -110,7 +134,7 @@ class Notebooks {
                     $assigedDate = $this->Functions->convertMysqlDateToPhpDate($notebook['created_date']);
                     $status = $notebook['status_name'];
                     $author = $notebook['author_username'];
-                    $commentBubble = $this->prepareCommentBubble($id, $notebook['comments']);
+                    $commentBubble = $this->prepareCommentBubble($id);
                     $statusDropDown = $this->Statuses->populateStatusesforTable($status);
 
                     $tableBody .= "<tr id='assigned-$id'>";
@@ -119,7 +143,6 @@ class Notebooks {
                     $tableBody .= "<td>$statusDropDown</td>";
                     $tableBody .= "<td>$author</td>";
                     $tableBody .= "</tr>";
-                    $zIndex--;
                 }
             }
         } else {
@@ -138,7 +161,7 @@ class Notebooks {
                     $assigedDate = $this->Functions->convertMysqlDateToPhpDate($notebook['created_date']);
                     $status = $notebook['status_name'];
                     $reviewer = $notebook['reviewer_username'];
-                    $commentBubble = $this->prepareCommentBubble($notebook['comments']);
+                    $commentBubble = $this->prepareCommentBubble($id);
 
                     $tableBody .= "<tr id='my-$id'>";
                     $tableBody .= "<td>$notebookNo$commentBubble</td>";
@@ -164,7 +187,7 @@ class Notebooks {
                 $status = $notebook['status_name'];
                 $author = $notebook['author_username'];
                 $reviewer = $notebook['reviewer_username'];
-                $commentBubble = $this->prepareCommentBubble($notebook['comments']);
+                $commentBubble = $this->prepareCommentBubble($id);
 
                 $tableBody .= "<tr>";
                 $tableBody .= "<td>$notebookNo$commentBubble</td>";
@@ -182,18 +205,22 @@ class Notebooks {
 
     public function addNewNotebook($notebookNo, $assignedTo, $comments) {
         $sql = "INSERT INTO notebooks (notebook_no, author_id, reviewer_id, last_modified_date, comments) ";
-        $sql .= "SELECT :notebook_no, :author_id, id, :currentDate, :comments FROM %s.users WHERE username = :username";
+        $sql .= "SELECT :notebookNo, :authorId, id, :currentDate, :comments FROM %s.users WHERE username = :username";
 
         $query = sprintf($sql, Constants::OMS_DB_NAME);
 
         $currentDate = date("Y-m-d H:i:s");
         $stmt = $this->Database->prepare($query);
-        $stmt->bindValue(':notebook_no', $notebookNo, PDO::PARAM_STR);
-        $stmt->bindValue(':author_id', "1", PDO::PARAM_STR);
+        $stmt->bindValue(':notebookNo', $notebookNo, PDO::PARAM_STR);
+        $stmt->bindValue(':authorId', $_SESSION['id'], PDO::PARAM_STR);
         $stmt->bindValue(':currentDate', $currentDate, PDO::PARAM_STR);
         $stmt->bindValue(':comments', $comments, PDO::PARAM_STR);
         $stmt->bindValue(':username', $assignedTo, PDO::PARAM_STR);
         return $stmt->execute();
+    }
+
+    public function getNotebookDetails($id) {
+        return $this->notebooksArray[$id];
     }
 
 }

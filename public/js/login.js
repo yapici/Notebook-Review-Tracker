@@ -80,7 +80,7 @@ var Login = {
                     email: email,
                     password: password
                 },
-                errorDiv: "#add-new-item-error-div"
+                errorDiv: $("#login-error-div")
             };
 
             Core.ajax(params,

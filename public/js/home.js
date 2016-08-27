@@ -53,64 +53,75 @@ var CommentsBubble = {
             if (e.target.nodeName === "SELECT") {
                 return;
             }
-
-            var tr = that.tr = $(this);
-            var radius = tr.closest("table").css("border-bottom-right-radius");
-            var wrapper = $(that.wrapper);
-            wrapper.show();
+            that.tr = $(this);
 
             if (!that.isVisible) {
-                that.isVisible = true;
-                $("#gray-out-div").fadeIn();
-                wrapper.html("");
-                wrapper.html("<span class='close-popup-button' style='top: -1.6em; right: 0;' onclick='CommentsBubble.hide()'></span><table><tr>" + tr.html() + "</tr></table>");
-                var bubble = wrapper.find(".comment-bubble");
-
-                wrapper.css({
-                    height: "auto",
-                    width: tr.outerWidth()
-                });
-
-                var position = tr.position();
-                wrapper.css(position);
-
-                wrapper.animate({
-                    top: $(window).height() / 2 - wrapper.outerHeight() - bubble.outerHeight() / 2,
-                    left: $(window).width() / 2 - wrapper.outerWidth() / 2
-                });
-
-                wrapper.find("td:first-child").css("width", tr.find("td:first-child").outerWidth());
-                wrapper.find("td:nth-child(2)").css("width", tr.find("td:nth-child(2)").outerWidth());
-                wrapper.find("td:nth-child(3)").css("width", tr.find("td:nth-child(3)").outerWidth());
-                wrapper.find("td:last-child").css("width", tr.find("td:last-child").outerWidth());
-
-                // Do not delete this second css assignment code. Double assignment is intentional due to a bug.
-                wrapper.css({
-                    height: "auto",
-                    width: tr.outerWidth()
-                });
-
-                that.bubbleHeight = bubble.height();
-                bubble.css("height", "0");
-                bubble.css("width", tr.width());
-                bubble.animate({
-                    height: that.bubbleHeight,
-                    opacity: "1"
-                }, 500);
-
-                wrapper.find("td:first-child").animate({
-                    borderTopLeftRadius: radius,
-                    borderBottomLeftRadius: radius
-                });
-
-                wrapper.find("td:last-child").animate({
-                    borderTopRightRadius: radius,
-                    borderBottomRightRadius: radius
-                });
+                that.show();
             } else {
                 that.hide();
             }
         });
+    },
+    show: function () {
+        var that = this;
+        var tr = that.tr;
+        var radius = tr.closest("table").css("border-bottom-right-radius");
+        var wrapper = $(that.wrapper);
+        wrapper.show();
+
+        that.isVisible = true;
+        $("#gray-out-div").fadeIn();
+        wrapper.html("");
+        wrapper.html("<span class='close-popup-button' style='top: -1.6em; right: 0;' onclick='CommentsBubble.hide()'></span><table><tr>" + tr.html() + "</tr></table>");
+        var bubble = wrapper.find(".comment-bubble");
+
+        wrapper.css({
+            height: "auto",
+            width: tr.outerWidth()
+        });
+
+        var position = tr.position();
+        wrapper.css(position);
+
+        wrapper.animate({
+            top: $(window).height() / 2 - wrapper.outerHeight() - bubble.outerHeight() / 2,
+            left: $(window).width() / 2 - wrapper.outerWidth() / 2
+        });
+
+        wrapper.find("td:first-child").css("width", tr.find("td:first-child").outerWidth());
+        wrapper.find("td:nth-child(2)").css("width", tr.find("td:nth-child(2)").outerWidth());
+        wrapper.find("td:nth-child(3)").css("width", tr.find("td:nth-child(3)").outerWidth());
+        wrapper.find("td:last-child").css("width", tr.find("td:last-child").outerWidth());
+
+        // Do not delete this second css assignment code. Double assignment is intentional due to a bug.
+        wrapper.css({
+            height: "auto",
+            width: tr.outerWidth()
+        });
+
+        that.bubbleHeight = bubble.height();
+        bubble.css("height", "0");
+        bubble.css("width", tr.width());
+        bubble.animate({
+            height: that.bubbleHeight,
+            opacity: "1"
+        }, 500);
+
+        wrapper.find("td:first-child").animate({
+            borderTopLeftRadius: radius,
+            borderBottomLeftRadius: radius
+        });
+
+        wrapper.find("td:last-child").animate({
+            borderTopRightRadius: radius,
+            borderBottomRightRadius: radius
+        });
+        
+        wrapper.find(".comment-elements-outer-wrappper").animate({
+            scrollTop: wrapper.find(".comment-elements-outer-wrappper").height()
+        });
+
+        Core.ajaxKeepGrayOut = true;
     },
     hide: function () {
         var that = this;
@@ -138,11 +149,12 @@ var CommentsBubble = {
             wrapper.html("");
             wrapper.hide();
         });
+
+        Core.ajaxKeepGrayOut = false;
     },
     reposition: function () {
         var that = this;
         if (that.isVisible) {
-            console.log("1");
             var wrapper = $(that.wrapper);
             var bubble = wrapper.find(".comment-bubble");
             var tr = that.tr;
@@ -158,8 +170,34 @@ var CommentsBubble = {
             });
         }
     },
-    addComment: function () {
-        
+    addComment: function (element) {
+        var innerWrapper = $(element).closest('.comment-bubble-inner-wrapper');
+        var id = innerWrapper.find("textarea").attr("class").split('-').pop().trim();
+        var comment = innerWrapper.find("textarea").val().trim();
+        var errorDiv = innerWrapper.find(".error-div");
+        Core.resetErrorDiv(errorDiv);
+
+        if (comment !== "") {
+            var params = {
+                url: "ajax/add-comment.php",
+                method: "POST",
+                data: {
+                    id: id,
+                    comment: comment
+                },
+                errorDiv: errorDiv
+            };
+
+            Core.ajax(params,
+                    function (json) {
+                        console.log(json);
+                        if (json.status === "success") {
+                        } else {
+                        }
+                    });
+        } else {
+            errorDiv.html("Please add a message first");
+        }
     }
 };
 
@@ -220,7 +258,7 @@ var AddNewItem = {
                     reviewer: reviewer,
                     comments: comments
                 },
-                errorDiv: "#add-new-item-error-div"
+                errorDiv: $("#add-new-item-error-div")
             };
 
             Core.ajax(params,
