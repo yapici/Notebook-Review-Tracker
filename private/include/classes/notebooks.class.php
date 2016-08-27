@@ -3,7 +3,7 @@
 /* ===================================================================================== */
 /* Copyright 2016 Engin Yapici <engin.yapici@gmail.com>                                  */
 /* Created on 08/05/2016                                                                 */
-/* Last modified on 08/23/2016                                                           */
+/* Last modified on 08/26/2016                                                           */
 /* ===================================================================================== */
 
 /* ===================================================================================== */
@@ -114,11 +114,11 @@ class Notebooks {
                     $commentBubble = $this->prepareCommentBubble($notebook['comments']);
                     $statusDropDown = $this->Statuses->populateStatusesforTable($status);
 
-                    $tableBody .= "<tr id='$id'>";
-                    $tableBody .= "<td><span>$notebookNo</span>$commentBubble</td>";
-                    $tableBody .= "<td><span>$assigedDate</span></td>";
+                    $tableBody .= "<tr id='assigned-$id'>";
+                    $tableBody .= "<td>$notebookNo$commentBubble</td>";
+                    $tableBody .= "<td>$assigedDate</td>";
                     $tableBody .= "<td>$statusDropDown</td>";
-                    $tableBody .= "<td><span>$author</span></td>";
+                    $tableBody .= "<td>$author</td>";
                     $tableBody .= "</tr>";
                     $zIndex--;
                 }
@@ -141,13 +141,39 @@ class Notebooks {
                     $reviewer = $notebook['reviewer_username'];
                     $commentBubble = $this->prepareCommentBubble($notebook['comments']);
 
-                    $tableBody .= "<tr id='$id'>";
-                    $tableBody .= "<td><span>$notebookNo</span>$commentBubble</td>";
-                    $tableBody .= "<td><span>$status</span></td>";
-                    $tableBody .= "<td><span>$reviewer</span></td>";
-                    $tableBody .= "<td><span>$assigedDate</span></td>";
+                    $tableBody .= "<tr id='my-$id'>";
+                    $tableBody .= "<td>$notebookNo$commentBubble</td>";
+                    $tableBody .= "<td>$status</td>";
+                    $tableBody .= "<td>$reviewer</td>";
+                    $tableBody .= "<td>$assigedDate</td>";
                     $tableBody .= "</tr>";
                 }
+            }
+        } else {
+            $tableBody = "<tr><td colspan='4'>There are no notebooks</td></tr>";
+        }
+        echo $tableBody;
+    }
+
+    public function populateRecentNotebooksTable() {
+        $tableBody = '';
+
+        if (!empty($this->notebooksArray)) {
+            foreach ($this->notebooksArray as $id => $notebook) {
+                $notebookNo = $notebook['notebook_no'];
+                $assigedDate = $this->Functions->convertMysqlDateToPhpDate($notebook['created_date']);
+                $status = $notebook['status_name'];
+                $author = $notebook['author_username'];
+                $reviewer = $notebook['reviewer_username'];
+                $commentBubble = $this->prepareCommentBubble($notebook['comments']);
+
+                $tableBody .= "<tr>";
+                $tableBody .= "<td>$notebookNo$commentBubble</td>";
+                $tableBody .= "<td>$author</td>";
+                $tableBody .= "<td>$status</td>";
+                $tableBody .= "<td>$reviewer</td>";
+                $tableBody .= "<td>$assigedDate</td>";
+                $tableBody .= "</tr>";
             }
         } else {
             $tableBody = "<tr><td colspan='4'>There are no notebooks</td></tr>";

@@ -2,7 +2,7 @@
 /* ===================================================================================== */
 /* Copyright 2016 Engin Yapici <engin.yapici@gmail.com>                                  */
 /* Created on 08/03/2016                                                                 */
-/* Last modified on 08/24/2016                                                           */
+/* Last modified on 08/26/2016                                                           */
 /* ===================================================================================== */
 
 /* ===================================================================================== */
@@ -52,45 +52,85 @@ if (!$Session->isSessionValid()) {
         <img id="progress-bar" src="images/progress-bar.gif"/>
         <div id="home-main-body-wrapper">
             <span id='version-span'>Version 1.0.0.<?php echo file_get_contents($file); ?></span>
-            <div id="assigned-notebooks-for-review-table-wrapper" class="table-wrapper">
-                <div class="heading table-heading">Notebooks Assigned to Me</div>
-                <table id="assigned-notebooks-for-review-table-wrapper" class="notebooks-table">
-                    <thead>
-                        <tr>
-                            <th>Notebook No</th>
-                            <th>Assigned Date</th>
-                            <th>Status</th>
-                            <th>Author</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <?php
-                        $Notebooks->populateAssignedNotebooksTable();
-                        ?>
-                    </tbody>
-                </table>
-            </div>
-            <div id="my-notebooks-waiting-for-review-table-wrapper" class="table-wrapper">
-                <div class="heading table-heading">My Notebooks</div>
-                <table id="my-notebooks-table-wrapper" class="notebooks-table">
-                    <thead>
-                        <tr>
-                            <th>Notebook No</th>
-                            <th>Status</th>
-                            <th>Reviewer</th>
-                            <th>Assigned Date</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <?php
-                        $Notebooks->populateMyNotebooksTable();
-                        ?>
-                    </tbody>
-                </table>
+            <div style="display: table;" id="main-wrapper-table">
+                <div style="display: table-row;" class="main-wrapper-table-tr">
+                    <div style="display: table-cell;" class="main-wrapper-table-td">
+                        <div id="assigned-notebooks-for-review-table-wrapper" class="table-wrapper">
+                            <div class="heading table-heading">Notebooks Assigned to Me</div>
+                            <table id="assigned-notebooks-for-review-table-wrapper" class="notebooks-table collapsable-table scrollable-table collapsable-table-1">
+                                <thead>
+                                    <tr>
+                                        <th>Notebook No</th>
+                                        <th>Assigned Date</th>
+                                        <th>Status</th>
+                                        <th>Author</th>
+                                        <th></th>
+                                    </tr>
+                                    <tr class="shadow">
+                                        <th colspan="5"></th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <?php
+                                    $Notebooks->populateAssignedNotebooksTable();
+                                    ?>
+                                </tbody>
+                            </table>
+                        </div>
+                        <div id="my-notebooks-waiting-for-review-table-wrapper" class="table-wrapper">
+                            <div class="heading table-heading">My Notebooks</div>
+                            <table id="my-notebooks-table-wrapper" class="notebooks-table collapsable-table scrollable-table collapsable-table-2">
+                                <thead>
+                                    <tr>
+                                        <th>Notebook No</th>
+                                        <th>Status</th>
+                                        <th>Reviewer</th>
+                                        <th>Assigned Date</th>
+                                        <th></th>
+                                    </tr>
+                                    <tr class="shadow">
+                                        <th colspan="5"></th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <?php
+                                    $Notebooks->populateMyNotebooksTable();
+                                    ?>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                    <div style="display: table-row;" class="main-wrapper-table-td">
+                        <div id="recently-added-notebooks-waiting-for-review-table-wrapper" class="table-wrapper">
+                            <div class="heading table-heading">Recently Added Notebooks</div>
+                            <table id="recently-added-notebooks-table-wrapper" class="notebooks-table scrollable-table">
+                                <thead>
+                                    <tr>
+                                        <th>Notebook No</th>
+                                        <th>Author</th>
+                                        <th>Status</th>
+                                        <th>Reviewer</th>
+                                        <th>Assigned Date</th>
+                                        <th></th>
+                                    </tr>
+                                    <tr class="shadow">
+                                        <th colspan="6"></th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <?php
+                                    $Notebooks->populateRecentNotebooksTable();
+                                    ?>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
             </div>
             <div id="main-error-div" class="error-div"></div>
+            <div id="invisible-element"></div>
+            <div id="notebook-table-element-holder"></div>
         </div>
-        <div id="invisible-element"></div>
     </body>
 </html>
 

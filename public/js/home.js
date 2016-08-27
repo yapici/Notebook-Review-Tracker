@@ -1,17 +1,37 @@
-$(document).ready(function () {
+var resizeTimer;
+var windowHeight;
+$(window).load(function () {
+    windowHeight = $(window).height();
     AddNewItem.selectChangeListener();
     CommentsBubble.clickListeners();
+    CollapsableTables.resizeCollapsibleTables();
+    NotebooksTables.adjustTableCellWidths();
+});
+
+$(window).on('resize', function () {
+    clearTimeout(resizeTimer);
+    resizeTimer = setTimeout(function () {
+        if (windowHeight !== $(window).height()) {
+            windowHeight = $(window).height();
+            CollapsableTables.resizeCollapsibleTables();
+        }
+        NotebooksTables.adjustTableCellWidths();
+    }, 400);
 });
 
 var CommentsBubble = {
-    originalTdZ: "1",
     bubbleHeight: "",
-    td: "",
-    isVisible: false,
+    tr: "",
+    isVisible: true,
+    wrapper: "#notebook-table-element-holder",
     clickListeners: function () {
         var that = this;
 
-        $(".notebooks-table").on("click", ".comment-bubble", function (e) {
+        $(that.wrapper).on("click", ".comment-bubble", function (e) {
+            e.stopPropagation();
+        });
+
+        $(that.wrapper).on("click", "select", function (e) {
             e.stopPropagation();
         });
 
@@ -23,34 +43,49 @@ var CommentsBubble = {
             that.hide();
         });
 
-        $(".notebooks-table").on("click", "tr", function () {
-            that.td = $(this);
-            var td = that.td;
-            var currentZ = td.find("td").css("z-index");
-            var bubble = td.find(".comment-bubble");
-            var radius = td.closest("table").css("border-radius");
+        $(document).on("click", that.wrapper, function () {
+            that.hide();
+        });
 
-            if (currentZ !== "9999") {
+        $(".notebooks-table tbody").on("click", "tr", function () {
+            that.tr = $(this);
+            var tr = that.tr;
+            var radius = tr.closest("table").css("border-bottom-right-radius");
+            var wrapper = $(that.wrapper);
+            wrapper.show();
+
+            if (that.isVisible) {
                 that.isVisible = false;
-                that.originalTdZ = currentZ;
-                td.find("td").css("z-index", "9999");
                 $("#gray-out-div").fadeIn();
-                bubble.show().css("z-index", "9999");
+                wrapper.html("");
+                wrapper.html("<table><tr>" + tr.html() + "</tr></table>");
+                wrapper.css({
+                    height: "auto",
+                    width: tr.outerWidth()
+                });
+                wrapper.find("td:first-child").css("width", tr.find("td:first-child").outerWidth());
+                wrapper.find("td:nth-child(2)").css("width", tr.find("td:nth-child(2)").outerWidth());
+                wrapper.find("td:nth-child(3)").css("width", tr.find("td:nth-child(3)").outerWidth());
+                wrapper.find("td:last-child").css("width", tr.find("td:last-child").outerWidth());
+
+                var position = tr.position();
+                wrapper.css(position);
+                var bubble = wrapper.find(".comment-bubble");
 
                 that.bubbleHeight = bubble.height();
                 bubble.css("height", "0");
                 bubble.animate({
-                    width: td.width(),
+                    width: tr.width(),
                     height: that.bubbleHeight,
                     opacity: "1"
                 }, 500);
 
-                td.find("td:first-child").animate({
+                wrapper.find("td:first-child").animate({
                     borderTopLeftRadius: radius,
                     borderBottomLeftRadius: radius
                 });
 
-                td.find("td:last-child").animate({
+                wrapper.find("td:last-child").animate({
                     borderTopRightRadius: radius,
                     borderBottomRightRadius: radius
                 });
@@ -62,8 +97,9 @@ var CommentsBubble = {
     hide: function () {
         var that = this;
         that.isVisible = true;
-        var td = that.td;
-        var bubble = td.find(".comment-bubble");
+        var tr = that.tr;
+        var wrapper = $(that.wrapper);
+        var bubble = wrapper.find(".comment-bubble");
         $("#gray-out-div").fadeOut();
 
         bubble.animate({
@@ -73,31 +109,11 @@ var CommentsBubble = {
             minHeight: "0px"
         }, 500).promise().done(function () {
             bubble.hide().css({
-                zIndex: that.originalTdZ,
                 height: that.bubbleHeight
             });
-            td.find("td").css("z-index", that.originalTdZ);
+            wrapper.html("");
+            wrapper.hide();
         });
-
-        if (td.is(':last-child')) {
-            td.find("td:first-child").animate({
-                borderTopLeftRadius: 0
-            });
-
-            td.find("td:last-child").animate({
-                borderTopRightRadius: 0
-            });
-        } else {
-            td.find("td:first-child").animate({
-                borderTopLeftRadius: 0,
-                borderBottomLeftRadius: 0
-            });
-
-            td.find("td:last-child").animate({
-                borderTopRightRadius: 0,
-                borderBottomRightRadius: 0
-            });
-        }
     }
 };
 
@@ -190,6 +206,111 @@ var AddNewItem = {
         $(document).on('change', '#add-new-notebook-items-wrapper select', function () {
             if (!$(this).is(':disabled')) {
                 $(this).css('color', Constants.MAIN_TEXT_COLOR);
+            }
+        });
+    }
+};
+
+var CollapsableTables = {
+    collapsableTable1Visible: true,
+    collapsableTable2Visible: true,
+    resizeCollapsibleTables: function () {
+        var viewportHeight = $(window).height();
+        var headerHeight = $(".header").outerHeight();
+
+        var tableHeadingHeights =
+                (
+                        (
+                                $(".collapsable-table").siblings('.heading').outerHeight() +
+                                parseInt($(".collapsable-table").siblings('.heading').css("margin-top"))
+                                )
+                        * 2) || 84;
+        var tablesWrapperMargin = (parseInt($(".table-wrapper").css("margin-bottom")) + parseInt($(".table-wrapper").css("margin-top")) * 2) || 60;
+        var mainWrapperPaddings = (parseInt($("#home-main-body-wrapper").css("padding-bottom")) + parseInt($("#home-main-body-wrapper").css("padding-top")) * 2) || 40;
+
+        var availableHeight =
+                viewportHeight - (
+                        headerHeight +
+                        tableHeadingHeights +
+                        tablesWrapperMargin +
+                        mainWrapperPaddings
+                        ) + 20;
+        $("#recently-added-notebooks-table-wrapper").css("max-height", availableHeight + tablesWrapperMargin / 2 + tableHeadingHeights / 2 + 1);
+        $("#home-main-body-wrapper").css("height", availableHeight);
+
+        var collapsableTable1MaxHeight;
+        var collapsableTable2MaxHeight;
+
+        var collapsableTable1 = $(".collapsable-table-1");
+        var collapsableTable2 = $(".collapsable-table-2");
+
+        var invisibleHolder = $("#invisible-element");
+        invisibleHolder.html("<table class='notebooks-table'>" + collapsableTable1.html() + "</table>");
+        collapsableTable1MaxHeight = invisibleHolder.height() + 4;
+
+        if (collapsableTable1MaxHeight < 100) {
+            collapsableTable1.css("min-height", collapsableTable1MaxHeight);
+        }
+
+        invisibleHolder.html("<table class='notebooks-table'>" + collapsableTable2.html() + "</table>");
+        collapsableTable2MaxHeight = invisibleHolder.height() + 4;
+        invisibleHolder.html("");
+
+        if (collapsableTable2MaxHeight < 100) {
+            collapsableTable2.css("min-height", collapsableTable2MaxHeight);
+        }
+
+        var halfOfAvailableHeight = availableHeight / 2;
+
+        if (this.collapsableTable1Visible
+                && !this.collapsableTable2Visible) {
+            collapsableTable1.css("max-height", availableHeight);
+        } else if (!this.collapsableTable1Visible
+                && this.collapsableTable2Visible) {
+            collapsableTable2.css("max-height", availableHeight);
+        } else if (this.collapsableTable1Visible
+                && this.collapsableTable2Visible) {
+            halfOfAvailableHeight = availableHeight / 2;
+
+            if (collapsableTable1MaxHeight < halfOfAvailableHeight) {
+                if (collapsableTable2MaxHeight > halfOfAvailableHeight) {
+                    collapsableTable1.css("max-height", collapsableTable1MaxHeight);
+                    collapsableTable2.css("max-height", availableHeight - collapsableTable1MaxHeight);
+                } else {
+                    collapsableTable1.css("max-height", collapsableTable1MaxHeight);
+                    collapsableTable2.css("max-height", collapsableTable2MaxHeight);
+                }
+            } else if (collapsableTable1MaxHeight > halfOfAvailableHeight) {
+                if (collapsableTable2MaxHeight < halfOfAvailableHeight) {
+                    collapsableTable1.css("max-height", availableHeight - collapsableTable2MaxHeight);
+                    collapsableTable2.css("max-height", collapsableTable2MaxHeight);
+                } else {
+                    collapsableTable1.css("max-height", halfOfAvailableHeight);
+                    collapsableTable2.css("max-height", halfOfAvailableHeight);
+                }
+            }
+        }
+    }
+};
+
+var NotebooksTables = {
+    adjustTableCellWidths: function () {
+        $(".notebooks-table").each(function () {
+            var firstCell = $(this).find("tr td:first-child");
+            
+            var invisibleEl = $("#invisible-element");
+            invisibleEl.html(firstCell.html().substring(0, firstCell.html().indexOf("<span")));
+            var width = invisibleEl.outerWidth() + parseInt(firstCell.css('padding-right'))*3;
+            invisibleEl.html("");
+            
+            var numOfColumns = $(this).find("tbody tr").children().size() / $(this).find("tbody tr").size();
+            
+            if ($(this).width()/numOfColumns < width) {
+                console.log('1');
+                firstCell.animate({width: width});
+                $(this).find("tr:first-child th:first-child").animate({width: width});
+            } else {
+                firstCell.css('width', "auto");
             }
         });
     }
