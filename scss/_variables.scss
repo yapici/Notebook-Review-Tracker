@@ -68,6 +68,14 @@ $default-border-radius: 4px;
     transition: max-height $duration ease;
 }
 
+@mixin animate-width-change($duration) {
+    -webkit-transition: width $duration ease;
+    -moz-transition: width $duration ease;
+    -ms-transition: width $duration ease;
+    -o-transition: width $duration ease;
+    transition: width $duration ease;
+}
+
 .noselect {
     -webkit-touch-callout: none;
     -webkit-user-select: none;

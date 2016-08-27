@@ -22,7 +22,7 @@ $(window).on('resize', function () {
 var CommentsBubble = {
     bubbleHeight: "",
     tr: "",
-    isVisible: true,
+    isVisible: false,
     wrapper: "#notebook-table-element-holder",
     clickListeners: function () {
         var that = this;
@@ -37,25 +37,33 @@ var CommentsBubble = {
 
         $(".notebooks-table").on("click", "select", function (e) {
             e.stopPropagation();
+            e.preventDefault();
+            e.cancelBubble = true;
+            return false;
         });
 
         $(document).on("click", "#gray-out-div", function () {
-            that.hide();
+            if (that.isVisible) {
+                that.hide();
+            }
         });
 
         $(document).on("click", that.wrapper, function () {
             that.hide();
         });
 
-        $(".notebooks-table tbody").on("click", "tr", function () {
-            that.tr = $(this);
-            var tr = that.tr;
+        $(".notebooks-table tbody").on("click", "tr", function (e) {
+            if (e.target.nodeName === "SELECT") {
+                return;
+            }
+            
+            var tr = that.tr = $(this);
             var radius = tr.closest("table").css("border-bottom-right-radius");
             var wrapper = $(that.wrapper);
             wrapper.show();
 
-            if (that.isVisible) {
-                that.isVisible = false;
+            if (!that.isVisible) {
+                that.isVisible = true;
                 $("#gray-out-div").fadeIn();
                 wrapper.html("");
                 wrapper.html("<table><tr>" + tr.html() + "</tr></table>");
@@ -96,7 +104,7 @@ var CommentsBubble = {
     },
     hide: function () {
         var that = this;
-        that.isVisible = true;
+        that.isVisible = false;
         var tr = that.tr;
         var wrapper = $(that.wrapper);
         var bubble = wrapper.find(".comment-bubble");
@@ -234,8 +242,8 @@ var CollapsableTables = {
                         tableHeadingHeights +
                         tablesWrapperMargin +
                         mainWrapperPaddings
-                        ) + 20;
-        $("#recently-added-notebooks-table-wrapper").css("max-height", availableHeight + tablesWrapperMargin / 2 + tableHeadingHeights / 2 + 1);
+                        ) + 30;
+        $("#recently-added-notebooks-table-wrapper").css("max-height", availableHeight + tablesWrapperMargin / 2 + tableHeadingHeights / 2);
         $("#home-main-body-wrapper").css("height", availableHeight);
 
         var collapsableTable1MaxHeight;
@@ -246,14 +254,14 @@ var CollapsableTables = {
 
         var invisibleHolder = $("#invisible-element");
         invisibleHolder.html("<table class='notebooks-table'>" + collapsableTable1.html() + "</table>");
-        collapsableTable1MaxHeight = invisibleHolder.height() + 4;
+        collapsableTable1MaxHeight = invisibleHolder.height();
 
         if (collapsableTable1MaxHeight < 100) {
             collapsableTable1.css("min-height", collapsableTable1MaxHeight);
         }
 
         invisibleHolder.html("<table class='notebooks-table'>" + collapsableTable2.html() + "</table>");
-        collapsableTable2MaxHeight = invisibleHolder.height() + 4;
+        collapsableTable2MaxHeight = invisibleHolder.height();
         invisibleHolder.html("");
 
         if (collapsableTable2MaxHeight < 100) {
@@ -297,15 +305,15 @@ var NotebooksTables = {
     adjustTableCellWidths: function () {
         $(".notebooks-table").each(function () {
             var firstCell = $(this).find("tr td:first-child");
-            
+
             var invisibleEl = $("#invisible-element");
             invisibleEl.html(firstCell.html().substring(0, firstCell.html().indexOf("<span")));
-            var width = invisibleEl.outerWidth() + parseInt(firstCell.css('padding-right'))*3;
+            var width = invisibleEl.outerWidth() + parseInt(firstCell.css('padding-right')) * 3;
             invisibleEl.html("");
-            
+
             var numOfColumns = $(this).find("tbody tr").children().size() / $(this).find("tbody tr").size();
-            
-            if ($(this).width()/numOfColumns < width) {
+
+            if ($(this).width() / numOfColumns < width) {
                 console.log('1');
                 firstCell.animate({width: width});
                 $(this).find("tr:first-child th:first-child").animate({width: width});

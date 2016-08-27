@@ -106,7 +106,7 @@ class Notebooks {
 
         if (!empty($this->notebooksArray)) {
             foreach ($this->notebooksArray as $id => $notebook) {
-                if ($notebook['author_id'] != $_SESSION['id']) {
+                if ($notebook['reviewer_id'] == $_SESSION['id']) {
                     $notebookNo = $notebook['notebook_no'];
                     $assigedDate = $this->Functions->convertMysqlDateToPhpDate($notebook['created_date']);
                     $status = $notebook['status_name'];
