@@ -3,7 +3,7 @@
 /* ===================================================================================== */
 /* Copyright 2016 Engin Yapici <engin.yapici@gmail.com>                                  */
 /* Created on 08/05/2016                                                                 */
-/* Last modified on 08/26/2016                                                           */
+/* Last modified on 08/27/2016                                                           */
 /* ===================================================================================== */
 
 /* ===================================================================================== */
@@ -87,15 +87,14 @@ class Notebooks {
         return $this->notebooksArray;
     }
 
-    private function prepareCommentBubble($comments) {
+    private function prepareCommentBubble($id, $comments) {
         $html = "<span class='comment-bubble'>";
         $html .= "<span class='heading'>Comments";
-        $html .= "<span class='close-popup-button' onclick='CommentsBubble.hide()'></span>";
         $html .= "</span>";
         $html .= "<div id='comment-bubble-inner-wrapper'>";
         $html .= "<p>" . $comments . "</p>";
-        $html .= "<textarea></textarea>";
-        $html .= "<div id='comment-bubble-button-wrapper'><a class='button'>Send</a></div>";
+        $html .= "<textarea id='comment-bubble-$id'></textarea>";
+        $html .= "<div id='comment-bubble-button-wrapper'><a class='button' onclick='CommentsBubble.addComment()'>Send</a></div>";
         $html .= "</div>";
         $html .= "</span>";
         return $html;
@@ -111,7 +110,7 @@ class Notebooks {
                     $assigedDate = $this->Functions->convertMysqlDateToPhpDate($notebook['created_date']);
                     $status = $notebook['status_name'];
                     $author = $notebook['author_username'];
-                    $commentBubble = $this->prepareCommentBubble($notebook['comments']);
+                    $commentBubble = $this->prepareCommentBubble($id, $notebook['comments']);
                     $statusDropDown = $this->Statuses->populateStatusesforTable($status);
 
                     $tableBody .= "<tr id='assigned-$id'>";

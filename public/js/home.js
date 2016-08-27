@@ -16,6 +16,7 @@ $(window).on('resize', function () {
             CollapsableTables.resizeCollapsibleTables();
         }
         NotebooksTables.adjustTableCellWidths();
+        CommentsBubble.reposition();
     }, 400);
 });
 
@@ -48,15 +49,11 @@ var CommentsBubble = {
             }
         });
 
-        $(document).on("click", that.wrapper, function () {
-            that.hide();
-        });
-
         $(".notebooks-table tbody").on("click", "tr", function (e) {
             if (e.target.nodeName === "SELECT") {
                 return;
             }
-            
+
             var tr = that.tr = $(this);
             var radius = tr.closest("table").css("border-bottom-right-radius");
             var wrapper = $(that.wrapper);
@@ -66,24 +63,37 @@ var CommentsBubble = {
                 that.isVisible = true;
                 $("#gray-out-div").fadeIn();
                 wrapper.html("");
-                wrapper.html("<table><tr>" + tr.html() + "</tr></table>");
+                wrapper.html("<span class='close-popup-button' style='top: -1.6em; right: 0;' onclick='CommentsBubble.hide()'></span><table><tr>" + tr.html() + "</tr></table>");
+                var bubble = wrapper.find(".comment-bubble");
+
                 wrapper.css({
                     height: "auto",
                     width: tr.outerWidth()
                 });
+
+                var position = tr.position();
+                wrapper.css(position);
+
+                wrapper.animate({
+                    top: $(window).height() / 2 - wrapper.outerHeight() - bubble.outerHeight() / 2,
+                    left: $(window).width() / 2 - wrapper.outerWidth() / 2
+                });
+
                 wrapper.find("td:first-child").css("width", tr.find("td:first-child").outerWidth());
                 wrapper.find("td:nth-child(2)").css("width", tr.find("td:nth-child(2)").outerWidth());
                 wrapper.find("td:nth-child(3)").css("width", tr.find("td:nth-child(3)").outerWidth());
                 wrapper.find("td:last-child").css("width", tr.find("td:last-child").outerWidth());
 
-                var position = tr.position();
-                wrapper.css(position);
-                var bubble = wrapper.find(".comment-bubble");
+                // Do not delete this second css assignment code. Double assignment is intentional due to a bug.
+                wrapper.css({
+                    height: "auto",
+                    width: tr.outerWidth()
+                });
 
                 that.bubbleHeight = bubble.height();
                 bubble.css("height", "0");
+                bubble.css("width", tr.width());
                 bubble.animate({
-                    width: tr.width(),
                     height: that.bubbleHeight,
                     opacity: "1"
                 }, 500);
@@ -110,8 +120,14 @@ var CommentsBubble = {
         var bubble = wrapper.find(".comment-bubble");
         $("#gray-out-div").fadeOut();
 
+        var position = tr.position();
+
+        wrapper.animate({
+            top: position.top,
+            left: position.left
+        });
+
         bubble.animate({
-            width: "0",
             height: "0",
             opacity: "0",
             minHeight: "0px"
@@ -122,6 +138,28 @@ var CommentsBubble = {
             wrapper.html("");
             wrapper.hide();
         });
+    },
+    reposition: function () {
+        var that = this;
+        if (that.isVisible) {
+            console.log("1");
+            var wrapper = $(that.wrapper);
+            var bubble = wrapper.find(".comment-bubble");
+            var tr = that.tr;
+
+            wrapper.animate({
+                top: $(window).height() / 2 - wrapper.outerHeight() - bubble.outerHeight() / 2,
+                left: $(window).width() / 2 - tr.outerWidth() / 2,
+                width: tr.outerWidth()
+            }).css("overflow", "visible");
+
+            bubble.animate({
+                width: tr.outerWidth()
+            });
+        }
+    },
+    addComment: function () {
+        
     }
 };
 
@@ -314,11 +352,11 @@ var NotebooksTables = {
             var numOfColumns = $(this).find("tbody tr").children().size() / $(this).find("tbody tr").size();
 
             if ($(this).width() / numOfColumns < width) {
-                console.log('1');
                 firstCell.animate({width: width});
                 $(this).find("tr:first-child th:first-child").animate({width: width});
             } else {
                 firstCell.css('width', "auto");
+                $(this).find("tr:first-child th:first-child").css('width', "auto");
             }
         });
     }
