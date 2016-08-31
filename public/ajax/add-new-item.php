@@ -3,7 +3,7 @@
 /* ===================================================================================== */
 /* Copyright 2016 Engin Yapici <engin.yapici@gmail.com>                                  */
 /* Created on 08/22/2016                                                                 */
-/* Last modified on 08/30/2016                                                           */
+/* Last modified on 08/31/2016                                                           */
 /* ===================================================================================== */
 
 /* ===================================================================================== */
@@ -38,9 +38,11 @@ if (filter_input(INPUT_SERVER, 'HTTP_X_REQUESTED_WITH')) {
     $notebookNo = $sanitizedPostArray['notebook_no'];
     $reviewer = $sanitizedPostArray['reviewer'];
     $comments = $sanitizedPostArray['comments'];
+    $author = $sanitizedPostArray['author'];
 
-    if ($Notebooks->addNewNotebook($notebookNo, $reviewer, $comments)) {
+    if ($Notebooks->addNewNotebook($notebookNo, $reviewer, $comments, $author)) {
         $jsonResponse['status'] = "success";
+        $jsonResponse['assigned_notebooks_tbody'] = $Notebooks->populateAssignedNotebooksTable();
         $jsonResponse['my_notebooks_tbody'] = $Notebooks->populateMyNotebooksTable();
         $jsonResponse['recent_notebooks_tbody'] = $Notebooks->populateRecentNotebooksTable();
     } else {

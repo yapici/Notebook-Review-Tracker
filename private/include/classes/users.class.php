@@ -3,7 +3,7 @@
 /* ===================================================================================== */
 /* Copyright 2016 Engin Yapici <engin.yapici@gmail.com>                                  */
 /* Created on 08/04/2016                                                                 */
-/* Last modified on 08/22/2016                                                           */
+/* Last modified on 08/31/2016                                                           */
 /* ===================================================================================== */
 
 /* ===================================================================================== */
@@ -68,13 +68,35 @@ class Users {
     public function getUsersArray() {
         return $this->usersArray;
     }
+    
+    /**
+     * @param string $username
+     * @return string User ID
+     */
+    public function getUserId($username) {
+        $userIdForReturn = 0;
+        foreach ($this->usersArray as $userId => $user) {
+            if ($user['username'] == $username) {
+                $userIdForReturn = $userId;
+            }
+        }
+        return $userIdForReturn;
+    }
 
     /**
      * Echoes the 'select' dropdown list of active users.
      */
     public function populateUsersDropdown($id) {
+        $dropdown = substr($id, strrpos($id, '-') + 1);
         $html = "<select id='$id'>";
-        $html .= "<option disabled selected>Reviewer</option>";
+
+        if ($dropdown == "reviewer") {
+            $html .= "<option disabled selected>Reviewer</option>";
+        } else if ($dropdown == "author") {
+            $author = $_SESSION['username'];
+            $html .= "<option selected value='$author'>$author</option>";
+        }
+        
         foreach ($this->usersArray as $userId => $user) {
             if ($user['account_status'] == '1') {
                 $userName = $user['username'];
@@ -86,4 +108,5 @@ class Users {
     }
 
 }
+
 ?>

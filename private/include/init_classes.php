@@ -2,7 +2,7 @@
 /* ===================================================================================== */
 /* Copyright 2016 Engin Yapici <engin.yapici@gmail.com>                                  */
 /* Created on 08/04/2016                                                                 */
-/* Last modified on 08/27/2016                                                           */
+/* Last modified on 08/31/2016                                                           */
 /* ===================================================================================== */
 
 /* ===================================================================================== */
@@ -45,5 +45,5 @@ $Statuses = new Statuses($Database, $Functions);
 $Comments = new Comments($Database, $Functions);
 
 /** @var Notebooks $Notebooks */
-$Notebooks = new Notebooks($Database, $Functions, $Statuses, $Comments);
+$Notebooks = new Notebooks($Database, $Functions, $Statuses, $Comments, $Users);
 

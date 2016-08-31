@@ -258,6 +258,7 @@ var AddNewItem = {
         var notebookNo = division + " " + project + "-" + pad(number);
 
         var reviewer = $("#add-new-item-reviewer").val();
+        var author = $("#add-new-item-author").val();
         var comments = $("#add-new-item-comments").val();
         var errorDiv = $("#add-new-item-error-div");
 
@@ -268,7 +269,8 @@ var AddNewItem = {
         if (division === "" ||
                 project === "" ||
                 number === "" ||
-                reviewer === "") {
+                reviewer === "" ||
+                author === "") {
             errorDiv.html("Please fill all the required fields");
         } else {
             var params = {
@@ -277,7 +279,8 @@ var AddNewItem = {
                 data: {
                     notebook_no: notebookNo,
                     reviewer: reviewer,
-                    comments: comments
+                    comments: comments,
+                    author: author
                 },
                 errorDiv: $("#add-new-item-error-div")
             };
@@ -285,8 +288,6 @@ var AddNewItem = {
             Core.ajax(params,
                     function (json) {
                         if (json.status === "success") {
-                            console.log(json);
-                            
                             that.closePopup();
                             Core.resetSelect($("#add-new-notebook-items-wrapper select"));
                             Core.resetErrorDiv($("#add-new-item-error-div"));
@@ -296,6 +297,7 @@ var AddNewItem = {
                             that.closePopup();
                             Core.showToast("New item is added successfully");
 
+                            $("#assigned-notebooks-for-review-table-wrapper tbody").html(json.assigned_notebooks_tbody);
                             $("#my-notebooks-table-wrapper tbody").html(json.my_notebooks_tbody);
                             $("#recently-added-notebooks-table-wrapper tbody").html(json.recent_notebooks_tbody);
                             CollapsableTables.resizeCollapsibleTables();

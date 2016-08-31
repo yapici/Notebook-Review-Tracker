@@ -234,6 +234,49 @@
         padding: 24px 20px 20px 20px;
         @include box-sizing-border-box;
 
+        table {
+            @include border-radius($default-border-radius);
+            overflow: hidden;
+            display: table;
+            table-layout: auto;
+            @include box-shadow(0, 0, 4px, rgba(0,0,0,0.1));
+
+            thead, tbody {
+                table-layout: auto;
+
+                td {
+                    padding: 0;
+                    width: 1%;
+
+                    input {
+                        background: transparent;
+                        border: none;
+                        padding: 8px 10px;
+                        outline: none;
+                        box-shadow: none;
+                        text-align: left !important;
+                        @include border-radius(0);
+                        text-align-last: left;
+
+                        &:focus {
+                            box-shadow: inset 0px 0px 10px rgba(0,0,0,0.15);
+                        }
+                    }
+
+                    select {
+                        text-align-last: left;
+                        padding-left: 10px;
+                        padding: 8px 10px;
+                        @include border-radius(0);
+
+                        &:focus {
+                            box-shadow: inset 0px 0px 10px rgba(0,0,0,0.15);
+                        }
+                    }
+                }
+            }
+        }
+
         #add-new-item-error-div {
             position: absolute;
             left: 0;

@@ -36,6 +36,7 @@ class Notebooks {
     private $Functions;
     private $Statuses;
     private $Comments;
+    private $Users;
 
     /** @var array $usersArray */
     public $notebooksArray;
@@ -45,12 +46,14 @@ class Notebooks {
      * @param Functions $functions
      * @param Statuses $statuses
      * @param Comments $comments
+     * @param Users $users
      */
-    function __construct($database, $functions, $statuses, $comments) {
+    function __construct($database, $functions, $statuses, $comments, $users) {
         $this->Database = $database;
         $this->Functions = $functions;
         $this->Statuses = $statuses;
         $this->Comments = $comments;
+        $this->Users = $users;
         $this->populateArray();
     }
 
@@ -210,16 +213,18 @@ class Notebooks {
         return $tableBody;
     }
 
-    public function addNewNotebook($notebookNo, $assignedTo, $comment) {
+    public function addNewNotebook($notebookNo, $assignedTo, $comment, $author) {
         $sql = "INSERT INTO notebooks (notebook_no, author_id, reviewer_id, last_modified_date) ";
         $sql .= "SELECT :notebookNo, :authorId, id, :currentDate FROM %s.users WHERE username = :username";
 
         $query = sprintf($sql, Constants::OMS_DB_NAME);
+        
+        $authorId = $this->Users->getUserId($author);
 
         $currentDate = date("Y-m-d H:i:s");
         $stmt = $this->Database->prepare($query);
         $stmt->bindValue(':notebookNo', $notebookNo, PDO::PARAM_STR);
-        $stmt->bindValue(':authorId', $_SESSION['id'], PDO::PARAM_STR);
+        $stmt->bindValue(':authorId', $authorId, PDO::PARAM_STR);
         $stmt->bindValue(':currentDate', $currentDate, PDO::PARAM_STR);
         $stmt->bindValue(':username', $assignedTo, PDO::PARAM_STR);
 

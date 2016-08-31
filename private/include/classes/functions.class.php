@@ -3,7 +3,7 @@
 /* ===================================================================================== */
 /* Copyright 2016 Engin Yapici <engin.yapici@gmail.com>                                  */
 /* Created on 08/04/2016                                                                 */
-/* Last modified on 08/27/2016                                                           */
+/* Last modified on 08/31/2016                                                           */
 /* ===================================================================================== */
 
 /* ===================================================================================== */
@@ -118,7 +118,6 @@ class Functions {
     public function sanitizePostedVariables() {
         $sanitizedArray = array();
         foreach ($_POST as $key => $value) {
-            $this->logError("sanitizePostedVariables", $value);
             $sanitizedArray[$key] = htmlspecialchars(trim(filter_input(INPUT_POST, $key)));
         }
         return $sanitizedArray;
