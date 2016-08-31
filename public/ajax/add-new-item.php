@@ -3,7 +3,7 @@
 /* ===================================================================================== */
 /* Copyright 2016 Engin Yapici <engin.yapici@gmail.com>                                  */
 /* Created on 08/22/2016                                                                 */
-/* Last modified on 08/22/2016                                                           */
+/* Last modified on 08/30/2016                                                           */
 /* ===================================================================================== */
 
 /* ===================================================================================== */
@@ -41,6 +41,8 @@ if (filter_input(INPUT_SERVER, 'HTTP_X_REQUESTED_WITH')) {
 
     if ($Notebooks->addNewNotebook($notebookNo, $reviewer, $comments)) {
         $jsonResponse['status'] = "success";
+        $jsonResponse['my_notebooks_tbody'] = $Notebooks->populateMyNotebooksTable();
+        $jsonResponse['recent_notebooks_tbody'] = $Notebooks->populateRecentNotebooksTable();
     } else {
         $jsonResponse['status'] = "fail";
     }

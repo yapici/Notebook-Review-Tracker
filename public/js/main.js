@@ -3,12 +3,12 @@ $(document).ready(function () {
 });
 
 var Core = {
-    toast: $("#main-toast-wrapper"),
+    toast: "#main-toast-wrapper",
     toastTimeout: "",
     ajaxKeepGrayOut: false,
     showToast: function (message, duration) {
         duration = typeof duration !== 'undefined' ? duration : 3000;
-        var toast = this.toast;
+        var toast = $(this.toast);
         toast.html(message);
         toast.fadeIn().css("display", "inline-block");
 
@@ -19,7 +19,7 @@ var Core = {
         }, duration);
     },
     hideToast: function () {
-        this.toast.hide();
+        $(this.toast).hide();
     },
     ajax: function (parameters, successCallback, doneCallback) {
         var that = this;

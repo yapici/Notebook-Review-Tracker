@@ -443,20 +443,6 @@ table {
     font-weight: 500;
 }
 
-#main-toast-wrapper {
-    display: none;
-    max-width: 16vw;
-    @include border-radius($default-border-radius);
-    background: rgba(0, 0, 0, 0.86);
-    color: $white-color;
-    position: fixed;
-    bottom: 4vh;
-    left: 50%;
-    transform: translate(-50%, 0);
-    padding: 10px 16px;
-    z-index: 99999999;
-}
-
 #progress-bar {
     position: fixed;
     margin: 0;
@@ -484,6 +470,24 @@ table {
     left: 0;
     position: fixed;
     display: none;
+}
+
+#main-toast-wrapper {
+  @extend .noselect;
+  cursor: default;
+  display: none;
+  font-size: 1.1em;
+  max-width: 16vw;
+  font-weight: bold;
+  @include border-radius($default-border-radius);
+  background: rgba(0, 0, 0, 0.8);
+  color: $white-color;
+  position: fixed;
+  bottom: 4vh;
+  left: 50%;
+  transform: translate(-50%, 0);
+  padding: 10px 16px;
+  z-index: 99999999;
 }
 
 ::-webkit-scrollbar {

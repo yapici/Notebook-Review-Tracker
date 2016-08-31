@@ -2,7 +2,7 @@
 /* ===================================================================================== */
 /* Copyright 2016 Engin Yapici <engin.yapici@gmail.com>                                  */
 /* Created on 08/03/2016                                                                 */
-/* Last modified on 08/26/2016                                                           */
+/* Last modified on 08/30/2016                                                           */
 /* ===================================================================================== */
 
 /* ===================================================================================== */
@@ -72,7 +72,7 @@ if (!$Session->isSessionValid()) {
                                 </thead>
                                 <tbody>
                                     <?php
-                                    $Notebooks->populateAssignedNotebooksTable();
+                                    echo $Notebooks->populateAssignedNotebooksTable();
                                     ?>
                                 </tbody>
                             </table>
@@ -94,7 +94,7 @@ if (!$Session->isSessionValid()) {
                                 </thead>
                                 <tbody>
                                     <?php
-                                    $Notebooks->populateMyNotebooksTable();
+                                    echo $Notebooks->populateMyNotebooksTable();
                                     ?>
                                 </tbody>
                             </table>
@@ -119,7 +119,7 @@ if (!$Session->isSessionValid()) {
                                 </thead>
                                 <tbody>
                                     <?php
-                                    $Notebooks->populateRecentNotebooksTable();
+                                    echo $Notebooks->populateRecentNotebooksTable();
                                     ?>
                                 </tbody>
                             </table>

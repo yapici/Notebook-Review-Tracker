@@ -25,6 +25,8 @@ var CommentsBubble = {
     tr: "",
     isVisible: false,
     wrapper: "#notebook-table-element-holder",
+    parentId: "",
+    commentsHtml: "",
     clickListeners: function () {
         var that = this;
 
@@ -100,12 +102,11 @@ var CommentsBubble = {
         });
 
         that.bubbleHeight = bubble.height();
-        bubble.css("height", "0");
         bubble.css("width", tr.width());
         bubble.animate({
-            height: that.bubbleHeight,
+            height: "auto",
             opacity: "1"
-        }, 500);
+        }, 500).css("display", "inline-block");
 
         wrapper.find("td:first-child").animate({
             borderTopLeftRadius: radius,
@@ -116,10 +117,8 @@ var CommentsBubble = {
             borderTopRightRadius: radius,
             borderBottomRightRadius: radius
         });
-        
-        wrapper.find(".comment-elements-outer-wrappper").animate({
-            scrollTop: wrapper.find(".comment-elements-outer-wrappper").height()
-        });
+
+        that.scrollToBottom(wrapper.find(".comment-elements-outer-wrappper"));
 
         Core.ajaxKeepGrayOut = true;
     },
@@ -148,6 +147,7 @@ var CommentsBubble = {
             });
             wrapper.html("");
             wrapper.hide();
+            $("#" + that.parentId).html(that.commentsHtml);
         });
 
         Core.ajaxKeepGrayOut = false;
@@ -171,9 +171,11 @@ var CommentsBubble = {
         }
     },
     addComment: function (element) {
+        var that = this;
         var innerWrapper = $(element).closest('.comment-bubble-inner-wrapper');
         var id = innerWrapper.find("textarea").attr("class").split('-').pop().trim();
-        var comment = innerWrapper.find("textarea").val().trim();
+        var textarea = innerWrapper.find("textarea");
+        var comment = textarea.val().trim();
         var errorDiv = innerWrapper.find(".error-div");
         Core.resetErrorDiv(errorDiv);
 
@@ -190,14 +192,32 @@ var CommentsBubble = {
 
             Core.ajax(params,
                     function (json) {
-                        console.log(json);
                         if (json.status === "success") {
+                            that.parentId = innerWrapper.find(".comment-elements-outer-wrappper").attr("id");
+                            that.commentsHtml = json.comments;
+
+                            innerWrapper.find(".comment-elements-outer-wrappper").html(json.comments);
+                            that.scrollToBottom(innerWrapper.find(".comment-elements-outer-wrappper"));
+
+                            textarea.val("");
+                            innerWrapper.closest(".comment-bubble").css("height", "auto");
+                            console.log("sss");
+                            console.log("height", innerWrapper.height());
                         } else {
                         }
                     });
         } else {
             errorDiv.html("Please add a message first");
         }
+    },
+    scrollToBottom: function (element) {
+        var height = 0;
+        element.find(".comment-elements-inner-wrapper").each(function () {
+            height += $(this).outerHeight();
+        });
+        element.animate({
+            scrollTop: height
+        });
     }
 };
 
@@ -244,6 +264,10 @@ var AddNewItem = {
         var comments = $("#add-new-item-comments").val();
         var errorDiv = $("#add-new-item-error-div");
 
+        if (comments === "Comments") {
+            comments = "";
+        }
+
         if (division === "" ||
                 project === "" ||
                 number === "" ||
@@ -264,11 +288,21 @@ var AddNewItem = {
             Core.ajax(params,
                     function (json) {
                         if (json.status === "success") {
+                            console.log(json);
+                            
                             that.closePopup();
                             Core.resetSelect($("#add-new-notebook-items-wrapper select"));
                             Core.resetErrorDiv($("#add-new-item-error-div"));
                             $("#add-new-item-number").val("");
                             $("#add-new-item-comments").val("");
+
+                            that.closePopup();
+                            Core.showToast("New item is added successfully");
+
+                            $("#my-notebooks-table-wrapper tbody").html(json.my_notebooks_tbody);
+                            $("#recently-added-notebooks-table-wrapper tbody").html(json.recent_notebooks_tbody);
+                            CollapsableTables.resizeCollapsibleTables();
+                            NotebooksTables.adjustTableCellWidths();
                         } else {
                             errorDiv.html(Constants.SERVER_FAIL_RESPONSE);
                         }
@@ -381,11 +415,15 @@ var NotebooksTables = {
     adjustTableCellWidths: function () {
         $(".notebooks-table").each(function () {
             var firstCell = $(this).find("tr td:first-child");
+            var width = 0;
+            try {
+                var invisibleEl = $("#invisible-element");
+                invisibleEl.html(firstCell.html().substring(0, firstCell.html().indexOf("<span")));
+                width = invisibleEl.outerWidth() + parseInt(firstCell.css('padding-right')) * 3;
+                invisibleEl.html("");
+            } catch (e) {
 
-            var invisibleEl = $("#invisible-element");
-            invisibleEl.html(firstCell.html().substring(0, firstCell.html().indexOf("<span")));
-            var width = invisibleEl.outerWidth() + parseInt(firstCell.css('padding-right')) * 3;
-            invisibleEl.html("");
+            }
 
             var numOfColumns = $(this).find("tbody tr").children().size() / $(this).find("tbody tr").size();
 

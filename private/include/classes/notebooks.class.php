@@ -3,7 +3,7 @@
 /* ===================================================================================== */
 /* Copyright 2016 Engin Yapici <engin.yapici@gmail.com>                                  */
 /* Created on 08/05/2016                                                                 */
-/* Last modified on 08/27/2016                                                           */
+/* Last modified on 08/31/2016                                                           */
 /* ===================================================================================== */
 
 /* ===================================================================================== */
@@ -55,20 +55,20 @@ class Notebooks {
     }
 
     private function populateArray() {
+        $this->notebooksArray = array();
         $query_string = "SELECT n.id, "
                 . "n.notebook_no, "
                 . "n.author_id, "
                 . "n.reviewer_id, "
                 . "n.status_id, "
                 . "n.created_date, "
-                . "n.comments, "
                 . "u1.username AS author_username, "
                 . "u2.username AS reviewer_username, "
                 . "s.status_name "
                 . "FROM notebooks AS n "
                 . "JOIN %s.users AS u1 ON (n.author_id = u1.id) "
                 . "JOIN %s.users AS u2 ON (n.reviewer_id = u2.id) "
-                . "JOIN status s ON (n.status_id = s.id)";
+                . "JOIN status s ON (n.status_id = s.id) ORDER BY n.id DESC";
 
         $sql = sprintf($query_string, Constants::OMS_DB_NAME, Constants::OMS_DB_NAME);
         $stmt = $this->Database->prepare($sql);
@@ -77,9 +77,11 @@ class Notebooks {
             $sanitizedArray = $this->Functions->sanitizeArray($row);
             $this->notebooksArray[$sanitizedArray['id']] = $sanitizedArray;
         }
+        $this->Functions->logError("populateArray " . date("Y-m-d H:i:s"), $this->notebooksArray);
     }
 
     public function refreshArray() {
+        $this->Functions->logError("refreshArray " . date("Y-m-d H:i:s"), $this->notebooksArray);
         $this->populateArray();
     }
 
@@ -90,30 +92,14 @@ class Notebooks {
         return $this->notebooksArray;
     }
 
-    private function prepareCommentBubble($id) {
+    public function prepareCommentBubble($id) {
         $html = "<span class='comment-bubble'>";
         $html .= "<span class='heading'>Comments</span>";
         $html .= "<div class='comment-bubble-inner-wrapper'>";
         $html .= "<div class='error-div'>&nbsp;</div>";
         $html .= "<div class='comment-elements-outer-outer-wrappper'>";
-        $html .= "<div class='comment-elements-outer-wrappper'>";
-
-        $commentsArray = $this->Comments->getCommentsWithId($id);
-        if (array_filter($commentsArray)) {
-            foreach ($commentsArray as $comment) {
-                $html .= "<p class='comment-elements-inner-wrapper'>";
-                if ($comment['sender_id'] == $_SESSION['id']) {
-                    $html .= "<span class='comment-username self'>" . $comment['username'] . ":</span>";
-                } else {
-                    $html .= "<span class='comment-username'>" . $comment['username'] . ":</span>";
-                }
-                $html .= "<span class='comment-message'>" . $comment['comment'] . "</span>";
-                $html .= "<span class='comment-datetime'>" . $this->Functions->convertMysqlDateToDateTime($comment['datetime']) . "</span>";
-                $html .= "</p>";
-            }
-        } else {
-            $html .= "<div style='color: #aaaaaa;'>No comments have been added so far</div>";
-        }
+        $html .= "<div class='comment-elements-outer-wrappper' id='assigned-notebooks-comments-$id'>";
+        $html .= $this->fetchComments($id);
         $html .= "</div>";
         $html .= "</div>";
 
@@ -121,6 +107,29 @@ class Notebooks {
         $html .= "<div class='comment-bubble-button-wrapper'><a class='button' onclick='CommentsBubble.addComment(this)'>Send</a></div>";
         $html .= "</div>";
         $html .= "</span>";
+        return $html;
+    }
+
+    public function fetchComments($id) {
+        $html = "";
+        $commentsArray = $this->Comments->getCommentsWithId($id);
+//        if ($commentsArray != null) {
+        if ($commentsArray != null && array_filter($commentsArray)) {
+            foreach ($commentsArray as $comment) {
+                $html .= "<p class='comment-elements-inner-wrapper'>";
+                if ($comment['sender_id'] == $_SESSION['id']) {
+                    $html .= "<span class='comment-username self'>" . $comment['username'] . "</span>";
+                } else {
+                    $html .= "<span class='comment-username'>" . $comment['username'] . "</span>";
+                }
+                $html .= "<span class='comment-message'>" . preg_replace('#&lt;br\s*/?&gt;#i', "<br/>", $comment['comment']) . "</span>";
+                $html .= "<span class='comment-datetime'>" . $this->Functions->convertMysqlDateToDateTime($comment['datetime']) . "</span>";
+                $html .= "</p>";
+            }
+        } else {
+            $html .= "<div style='color: #aaaaaa;'>No comments have been added so far</div>";
+        }
+//        }
         return $html;
     }
 
@@ -148,7 +157,7 @@ class Notebooks {
         } else {
             $tableBody = "<tr><td colspan='4'>There are no notebooks</td></tr>";
         }
-        echo $tableBody;
+        return $tableBody;
     }
 
     public function populateMyNotebooksTable() {
@@ -174,7 +183,7 @@ class Notebooks {
         } else {
             $tableBody = "<tr><td colspan='4'>There are no notebooks</td></tr>";
         }
-        echo $tableBody;
+        return $tableBody;
     }
 
     public function populateRecentNotebooksTable() {
@@ -200,12 +209,12 @@ class Notebooks {
         } else {
             $tableBody = "<tr><td colspan='4'>There are no notebooks</td></tr>";
         }
-        echo $tableBody;
+        return $tableBody;
     }
 
-    public function addNewNotebook($notebookNo, $assignedTo, $comments) {
-        $sql = "INSERT INTO notebooks (notebook_no, author_id, reviewer_id, last_modified_date, comments) ";
-        $sql .= "SELECT :notebookNo, :authorId, id, :currentDate, :comments FROM %s.users WHERE username = :username";
+    public function addNewNotebook($notebookNo, $assignedTo, $comment) {
+        $sql = "INSERT INTO notebooks (notebook_no, author_id, reviewer_id, last_modified_date) ";
+        $sql .= "SELECT :notebookNo, :authorId, id, :currentDate FROM %s.users WHERE username = :username";
 
         $query = sprintf($sql, Constants::OMS_DB_NAME);
 
@@ -214,9 +223,25 @@ class Notebooks {
         $stmt->bindValue(':notebookNo', $notebookNo, PDO::PARAM_STR);
         $stmt->bindValue(':authorId', $_SESSION['id'], PDO::PARAM_STR);
         $stmt->bindValue(':currentDate', $currentDate, PDO::PARAM_STR);
-        $stmt->bindValue(':comments', $comments, PDO::PARAM_STR);
         $stmt->bindValue(':username', $assignedTo, PDO::PARAM_STR);
-        return $stmt->execute();
+
+        if ($stmt->execute()) {
+            $this->refreshArray();
+            if ($comment != "") {
+                $notebookId = $this->Database->lastInsertId();
+
+                if ($this->Comments->addComment($notebookId, $comment, $_SESSION['id'])) {
+                    $this->Comments->refreshArray();
+                    return true;
+                } else {
+                    return false;
+                }
+            } else {
+                return true;
+            }
+        } else {
+            return false;
+        }
     }
 
     public function getNotebookDetails($id) {

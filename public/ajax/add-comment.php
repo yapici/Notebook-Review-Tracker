@@ -3,7 +3,7 @@
 /* ===================================================================================== */
 /* Copyright 2016 Engin Yapici <engin.yapici@gmail.com>                                  */
 /* Created on 08/27/2016                                                                 */
-/* Last modified on 08/27/2016                                                           */
+/* Last modified on 08/30/2016                                                           */
 /* ===================================================================================== */
 
 /* ===================================================================================== */
@@ -42,6 +42,7 @@ if (filter_input(INPUT_SERVER, 'HTTP_X_REQUESTED_WITH')) {
 
     if ($Comments->addComment($notebookId, $comment, $senderId)) {
         $jsonResponse['status'] = "success";
+        $jsonResponse['comments'] = $Notebooks->fetchComments($notebookId);
     } else {
         $jsonResponse['status'] = "fail";
     }

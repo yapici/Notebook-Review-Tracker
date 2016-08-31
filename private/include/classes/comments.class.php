@@ -3,7 +3,7 @@
 /* ===================================================================================== */
 /* Copyright 2016 Engin Yapici <engin.yapici@gmail.com>                                  */
 /* Created on 08/27/2016                                                                 */
-/* Last modified on 08/27/2016                                                           */
+/* Last modified on 08/31/2016                                                           */
 /* ===================================================================================== */
 
 /* ===================================================================================== */
@@ -74,7 +74,11 @@ class Comments {
      * @return array An array of comments for the provided notebook id
      */
     public function getCommentsWithId($notebookId) {
-        return $this->commentsArray[$notebookId];
+        if (array_key_exists($notebookId, $this->commentsArray)) {
+            return $this->commentsArray[$notebookId];
+        } else {
+            return null;
+        }
     }
 
     /**
@@ -88,8 +92,14 @@ class Comments {
         $stmt = $this->Database->prepare($sql);
         $stmt->bindValue(':notebookId', $notebookId, PDO::PARAM_STR);
         $stmt->bindValue(':senderId', $senderId, PDO::PARAM_STR);
-        $stmt->bindValue(':comment', $comment, PDO::PARAM_STR);
-        return $stmt->execute();
+        $stmt->bindValue(':comment', nl2br($comment), PDO::PARAM_STR);
+
+        if ($stmt->execute()) {
+            $this->refreshArray();
+            return true;
+        } else {
+            return false;
+        }
     }
 
 }
