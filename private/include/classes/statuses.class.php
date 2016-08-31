@@ -3,7 +3,7 @@
 /* ===================================================================================== */
 /* Copyright 2016 Engin Yapici <engin.yapici@gmail.com>                                  */
 /* Created on 08/05/2016                                                                 */
-/* Last modified on 08/21/2016                                                           */
+/* Last modified on 08/31/2016                                                           */
 /* ===================================================================================== */
 
 /* ===================================================================================== */
@@ -69,13 +69,33 @@ class Statuses {
         return $this->statusesArray;
     }
 
-    public function populateStatusesforTable($status) {
+    /**
+     * @param string $notebookId
+     * @param string $statusId
+     * @return boolean Returns true if successful.
+     */
+    public function updateStatus($notebookId, $statusId) {
+        $sql = "UPDATE notebooks SET status_id = :statusId WHERE id = :id";
+        $stmt = $this->Database->prepare($sql);
+
+        $stmt->bindValue(':statusId', $statusId, PDO::PARAM_STR);
+        $stmt->bindValue(':id', $notebookId, PDO::PARAM_STR);
+
+        if ($stmt->execute()) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    public function populateStatusesforTable($id) {
         $html = '';
         if (!empty($this->statusesArray)) {
-            $html .= '<select>';
+            $html .= '<select class="statuses-dropdown">';
             foreach ($this->statusesArray as $statusId => $status) {
                 $statusName = $status['status_name'];
-                if ($statusName == $status) {
+                if ($statusId == $id) {
+                    $this->Functions->logError('$statusName', $statusName);
                     $html .= "<option selected value='$statusId'>$statusName</option>";
                 } else {
                     $html .= "<option value='$statusId'>$statusName</option>";
@@ -89,4 +109,5 @@ class Statuses {
     }
 
 }
+
 ?>

@@ -477,7 +477,7 @@ table {
   cursor: default;
   display: none;
   font-size: 1.1em;
-  max-width: 16vw;
+  max-width: 80vw;
   font-weight: bold;
   @include border-radius($default-border-radius);
   background: rgba(0, 0, 0, 0.8);

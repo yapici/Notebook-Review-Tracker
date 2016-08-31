@@ -142,10 +142,10 @@ class Notebooks {
                 if ($notebook['reviewer_id'] == $_SESSION['id']) {
                     $notebookNo = $notebook['notebook_no'];
                     $assigedDate = $this->Functions->convertMysqlDateToPhpDate($notebook['created_date']);
-                    $status = $notebook['status_name'];
+                    $statusId = $notebook['status_id'];
                     $author = $notebook['author_username'];
                     $commentBubble = $this->prepareCommentBubble($id);
-                    $statusDropDown = $this->Statuses->populateStatusesforTable($status);
+                    $statusDropDown = $this->Statuses->populateStatusesforTable($statusId);
 
                     $tableBody .= "<tr id='assigned-$id'>";
                     $tableBody .= "<td>$notebookNo$commentBubble</td>";

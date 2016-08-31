@@ -6,6 +6,7 @@ $(window).load(function () {
     CommentsBubble.clickListeners();
     CollapsableTables.resizeCollapsibleTables();
     NotebooksTables.adjustTableCellWidths();
+    AssignedNotebooks.statusChangeListener();
 });
 
 $(window).on('resize', function () {
@@ -67,6 +68,7 @@ var CommentsBubble = {
     show: function () {
         var that = this;
         var tr = that.tr;
+        var trId = tr.attr("id");
         var radius = tr.closest("table").css("border-bottom-right-radius");
         var wrapper = $(that.wrapper);
         wrapper.show();
@@ -74,7 +76,7 @@ var CommentsBubble = {
         that.isVisible = true;
         $("#gray-out-div").fadeIn();
         wrapper.html("");
-        wrapper.html("<span class='close-popup-button' style='top: -1.6em; right: 0;' onclick='CommentsBubble.hide()'></span><table><tr>" + tr.html() + "</tr></table>");
+        wrapper.html("<span class='close-popup-button' style='top: -1.6em; right: 0;' onclick='CommentsBubble.hide()'></span><table><tr class='" + trId + "'>" + tr.html() + "</tr></table>");
         var bubble = wrapper.find(".comment-bubble");
 
         wrapper.css({
@@ -434,5 +436,52 @@ var NotebooksTables = {
                 $(this).find("tr:first-child th:first-child").css('width', "auto");
             }
         });
+    }
+};
+
+var AssignedNotebooks = {
+    currentStatus: "",
+    statusChangeListener: function () {
+        var that = this;
+
+        $("#assigned-notebooks-for-review-table-wrapper").on("focus", ".statuses-dropdown", function () {
+            that.currentStatus = $(this).val();
+        }).on("change", ".statuses-dropdown", function () {
+            if (that.currentStatus !== $(this).val()) {
+                var notebookId = $(this).closest('tr').attr("id").split('-').pop().trim();
+                that.updateStatus(notebookId, $(this).val());
+            }
+        });
+
+        $("#notebook-table-element-holder").on("focus", ".statuses-dropdown", function () {
+            that.currentStatus = $(this).val();
+        }).on("change", ".statuses-dropdown", function () {
+            if (that.currentStatus !== $(this).val()) {
+                var notebookId = $(this).closest('tr').attr("class").split(' ')[0].split('-').pop().trim();
+                that.updateStatus(notebookId, $(this).val());
+            }
+        });
+    },
+    updateStatus: function (notebookId, statusId) {
+        var that = this;
+
+        var params = {
+            url: "ajax/update-status.php",
+            method: "POST",
+            data: {
+                notebook_id: notebookId,
+                status_id: statusId
+            },
+            errorDiv: $("#main-error-div")
+        };
+
+        Core.ajax(
+                params,
+                function (json) {
+                    if (json.status === "success") {
+                        that.currentStatus = "";
+                        Core.showToast("Status was successfully updated");
+                    }
+                });
     }
 };
