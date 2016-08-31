@@ -214,8 +214,8 @@ class Notebooks {
     }
 
     public function addNewNotebook($notebookNo, $assignedTo, $comment, $author) {
-        $sql = "INSERT INTO notebooks (notebook_no, author_id, reviewer_id, last_modified_date) ";
-        $sql .= "SELECT :notebookNo, :authorId, id, :currentDate FROM %s.users WHERE username = :username";
+        $sql = "INSERT INTO notebooks (notebook_no, author_id, reviewer_id, created_by, last_modified_by, last_modified_date) ";
+        $sql .= "SELECT :notebookNo, :authorId, id, :createdBy, :lastModifiedBy, :currentDate FROM %s.users WHERE username = :username";
 
         $query = sprintf($sql, Constants::OMS_DB_NAME);
         
@@ -225,6 +225,8 @@ class Notebooks {
         $stmt = $this->Database->prepare($query);
         $stmt->bindValue(':notebookNo', $notebookNo, PDO::PARAM_STR);
         $stmt->bindValue(':authorId', $authorId, PDO::PARAM_STR);
+        $stmt->bindValue(':createdBy', $_SESSION['id'], PDO::PARAM_STR);
+        $stmt->bindValue(':lastModifiedBy', $_SESSION['id'], PDO::PARAM_STR);
         $stmt->bindValue(':currentDate', $currentDate, PDO::PARAM_STR);
         $stmt->bindValue(':username', $assignedTo, PDO::PARAM_STR);
 
@@ -250,7 +252,6 @@ class Notebooks {
     public function getNotebookDetails($id) {
         return $this->notebooksArray[$id];
     }
-
 }
 
 ?>

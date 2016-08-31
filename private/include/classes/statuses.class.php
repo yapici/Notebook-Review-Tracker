@@ -75,11 +75,14 @@ class Statuses {
      * @return boolean Returns true if successful.
      */
     public function updateStatus($notebookId, $statusId) {
-        $sql = "UPDATE notebooks SET status_id = :statusId WHERE id = :id";
+        $sql = "UPDATE notebooks SET status_id = :statusId, last_modified_by = :lastModifiedBy, last_modified_date = :lastModifiedDate WHERE id = :id";
         $stmt = $this->Database->prepare($sql);
+        $currentDate = date("Y-m-d H:i:s");
 
         $stmt->bindValue(':statusId', $statusId, PDO::PARAM_STR);
         $stmt->bindValue(':id', $notebookId, PDO::PARAM_STR);
+        $stmt->bindValue(':lastModifiedBy', $_SESSION['id'], PDO::PARAM_STR);
+        $stmt->bindValue(':lastModifiedDate', $currentDate, PDO::PARAM_STR);
 
         if ($stmt->execute()) {
             return true;
