@@ -123,7 +123,7 @@ class Notebooks {
                 } else {
                     $html .= "<span class='comment-username'>" . $comment['username'] . "</span>";
                 }
-                $html .= "<span class='comment-message'>" . preg_replace('#&lt;br\s*/?&gt;#i', "<br/>", $comment['comment']) . "</span>";
+                $html .= "<span class='comment-message'>" . preg_replace('#<br\s*/?>#i', "<br/>", htmlspecialchars_decode($comment['comment'])) . "</span>";
                 $html .= "<span class='comment-datetime'>" . $this->Functions->convertMysqlDateToDateTime($comment['datetime']) . "</span>";
                 $html .= "</p>";
             }
