@@ -147,7 +147,7 @@ var CommentsBubble = {
             });
             wrapper.html("");
             wrapper.hide();
-            $("#" + that.parentId).html(that.commentsHtml);
+            $(that.parentId).html(that.commentsHtml);
         });
 
         Core.ajaxKeepGrayOut = false;
@@ -193,16 +193,13 @@ var CommentsBubble = {
             Core.ajax(params,
                     function (json) {
                         if (json.status === "success") {
-                            that.parentId = innerWrapper.find(".comment-elements-outer-wrappper").attr("id");
+                            that.parentId = "." + innerWrapper.find(".comment-elements-outer-wrappper").attr('class').split(' ')[0];
                             that.commentsHtml = json.comments;
 
                             innerWrapper.find(".comment-elements-outer-wrappper").html(json.comments);
                             that.scrollToBottom(innerWrapper.find(".comment-elements-outer-wrappper"));
 
                             textarea.val("");
-                            innerWrapper.closest(".comment-bubble").css("height", "auto");
-                            console.log("sss");
-                            console.log("height", innerWrapper.height());
                         } else {
                         }
                     });

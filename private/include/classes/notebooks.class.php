@@ -77,11 +77,9 @@ class Notebooks {
             $sanitizedArray = $this->Functions->sanitizeArray($row);
             $this->notebooksArray[$sanitizedArray['id']] = $sanitizedArray;
         }
-        $this->Functions->logError("populateArray " . date("Y-m-d H:i:s"), $this->notebooksArray);
     }
 
     public function refreshArray() {
-        $this->Functions->logError("refreshArray " . date("Y-m-d H:i:s"), $this->notebooksArray);
         $this->populateArray();
     }
 
@@ -98,7 +96,7 @@ class Notebooks {
         $html .= "<div class='comment-bubble-inner-wrapper'>";
         $html .= "<div class='error-div'>&nbsp;</div>";
         $html .= "<div class='comment-elements-outer-outer-wrappper'>";
-        $html .= "<div class='comment-elements-outer-wrappper' id='assigned-notebooks-comments-$id'>";
+        $html .= "<div class='comments-wrapper-$id comment-elements-outer-wrappper'>";
         $html .= $this->fetchComments($id);
         $html .= "</div>";
         $html .= "</div>";
