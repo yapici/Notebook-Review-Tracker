@@ -417,7 +417,7 @@ var NotebooksTables = {
         $(".notebooks-table").each(function () {
             var width = 0;
             var firstCells = $(this).find("tr td:first-child");
-            
+
             $(this).find('tr').each(function () {
                 var firstCell = $(this).find("td:first-child");
                 try {
@@ -437,12 +437,60 @@ var NotebooksTables = {
 
             if ($(this).width() / numOfColumns < width) {
                 firstCells.animate({width: width});
-                $(this).find("tr:first-child th:first-child").animate({width: width});
+                $(this).find("tr:first-child th:first-child").animate({width: width}).promise().done(prepareTooltip);
             } else {
                 firstCells.css('width', "auto");
                 $(this).find("tr:first-child th:first-child").css('width', "auto");
+                prepareTooltip();
             }
         });
+
+        function prepareTooltip() {
+            $('.notebooks-table td+td').each(function (i) {
+                prep($(this));
+            });
+            $('.notebooks-table th+th').each(function (i) {
+                prep($(this));
+            });
+
+            function prep(el) {
+                el.attr("title", el.attr("tmp_title"));
+                var element = el
+                        .clone()
+                        .css({display: 'inline', width: 'auto', visibility: 'hidden'})
+                        .appendTo('body');
+
+                if (element.width() > el.width()) {
+                    el.tooltip({
+                        position: {
+                            my: "center bottom",
+                            at: "center top",
+                            collision: "flipfit",
+                            using: function (position, feedback) {
+                                $(this).css(position);
+                                $("<div>")
+                                        .addClass("arrow")
+                                        .addClass(feedback.vertical)
+                                        .addClass(feedback.horizontal)
+                                        .appendTo(this);
+                            }
+                        },
+                        show: {
+                            effect: "drop",
+                            direction: 'up',
+                            duration: 300,
+                            delay: 500,
+                            easing: "swing"
+                        }
+                    });
+                } else {
+                    el.attr("tmp_title", el.attr("title"));
+                    el.attr("title", "");
+                }
+
+                element.remove();
+            }
+        }
     }
 };
 

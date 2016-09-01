@@ -148,10 +148,10 @@ class Notebooks {
                     $statusDropDown = $this->Statuses->populateStatusesforTable($statusId);
 
                     $tableBody .= "<tr id='assigned-$id'>";
-                    $tableBody .= "<td>$notebookNo$commentBubble</td>";
+                    $tableBody .= "<td title='$notebookNo'>$notebookNo$commentBubble</td>";
+                    $tableBody .= "<td title='$author'>$author</td>";
                     $tableBody .= "<td>$statusDropDown</td>";
-                    $tableBody .= "<td>$author</td>";
-                    $tableBody .= "<td>$assigedDate</td>";
+                    $tableBody .= "<td title='$assigedDate'>$assigedDate</td>";
                     $tableBody .= "</tr>";
                 }
             }
@@ -174,10 +174,10 @@ class Notebooks {
                     $commentBubble = $this->prepareCommentBubble($id);
 
                     $tableBody .= "<tr id='my-$id'>";
-                    $tableBody .= "<td>$notebookNo$commentBubble</td>";
-                    $tableBody .= "<td>$status</td>";
-                    $tableBody .= "<td>$reviewer</td>";
-                    $tableBody .= "<td>$assigedDate</td>";
+                    $tableBody .= "<td title='$notebookNo'>$notebookNo$commentBubble</td>";
+                    $tableBody .= "<td title='$status'>$status</td>";
+                    $tableBody .= "<td title='$reviewer'>$reviewer</td>";
+                    $tableBody .= "<td title='$assigedDate'>$assigedDate</td>";
                     $tableBody .= "</tr>";
                 }
             }
@@ -200,11 +200,11 @@ class Notebooks {
                 $commentBubble = $this->prepareCommentBubble($id);
 
                 $tableBody .= "<tr>";
-                $tableBody .= "<td>$notebookNo$commentBubble</td>";
-                $tableBody .= "<td>$author</td>";
-                $tableBody .= "<td>$status</td>";
-                $tableBody .= "<td>$reviewer</td>";
-                $tableBody .= "<td>$assigedDate</td>";
+                $tableBody .= "<td title='$notebookNo'>$notebookNo$commentBubble</td>";
+                $tableBody .= "<td title='$author'>$author</td>";
+                $tableBody .= "<td title='$status'>$status</td>";
+                $tableBody .= "<td title='$reviewer'>$reviewer</td>";
+                $tableBody .= "<td title='$assigedDate'>$assigedDate</td>";
                 $tableBody .= "</tr>";
             }
         } else {

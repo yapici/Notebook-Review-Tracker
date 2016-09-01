@@ -83,8 +83,8 @@ if (!$Session->isSessionValid()) {
                                 <thead>
                                     <tr>
                                         <th title="Notebook No">Notebook No</th>
-                                        <th title="Status">Status</th>
                                         <th title="Reviewer">Reviewer</th>
+                                        <th title="Status">Status</th>
                                         <th title="Assigned Date">Assigned Date</th>
                                         <th></th>
                                     </tr>

@@ -1,5 +1,9 @@
 $(document).ready(function () {
     Core.preparePlaceholders();
+
+    if (Core.msieversion() < 11 && Core.msieversion()) {
+        Core.showToast("NRT is not compatible with Internet Explorer. Please use Google Chrome or Firefox.", 999999);
+    }
 });
 
 var Core = {
@@ -120,6 +124,16 @@ var Core = {
         select.find("option:first-child").attr("selected", "true");
         select.find("option:first-child").attr("disabled", "true");
         select.css("color", "#999999");
+    },
+    msieversion: function () {
+        var ua = window.navigator.userAgent;
+        var msie = ua.indexOf("MSIE ");
+
+        if (msie > 0) {      // If Internet Explorer, return version number
+            return parseInt(ua.substring(msie + 5, ua.indexOf(".", msie)));
+        } else {
+            return false;
+        }
     }
 };
 
@@ -128,7 +142,8 @@ var Constants = {
     DOMAIN_BODY: 'example',
     SERVER_FAIL_RESPONSE: 'Something went wrong with the server, please try again later or contact webmaster.',
     RED_COLOR: "#CC0000",
-    MAIN_TEXT_COLOR: "#1C4D6F"
+    MAIN_TEXT_COLOR: "#1C4D6F",
+    SITE_LINK: "http://localhost:8888"
 };
 
 var ProgressBar = {
