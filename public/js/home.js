@@ -413,7 +413,9 @@ var CollapsableTables = {
 };
 
 var NotebooksTables = {
+    cellWidthAdjustTimeout: "",
     adjustTableCellWidths: function () {
+        var that = this;
         $(".notebooks-table").each(function () {
             var width = 0;
             var firstCells = $(this).find("tr td:first-child");
@@ -446,50 +448,53 @@ var NotebooksTables = {
         });
 
         function prepareTooltip() {
-            $('.notebooks-table td+td').each(function (i) {
-                prep($(this));
-            });
-            $('.notebooks-table th+th').each(function (i) {
-                prep($(this));
-            });
+            clearTimeout(that.cellWidthAdjustTimeout);
+            that.cellWidthAdjustTimeout = setTimeout(function () {
+                $('.notebooks-table td+td').each(function (i) {
+                    prep($(this));
+                });
+                $('.notebooks-table th+th').each(function (i) {
+                    prep($(this));
+                });
 
-            function prep(el) {
-                el.attr("title", el.attr("tmp_title"));
-                var element = el
-                        .clone()
-                        .css({display: 'inline', width: 'auto', visibility: 'hidden'})
-                        .appendTo('body');
+                function prep(el) {
+                    el.attr("title", el.attr("tmp_title"));
+                    var element = el
+                            .clone()
+                            .css({display: 'inline', width: 'auto', visibility: 'hidden'})
+                            .appendTo('body');
 
-                if (element.width() > el.width()) {
-                    el.tooltip({
-                        position: {
-                            my: "center bottom",
-                            at: "center top",
-                            collision: "flipfit",
-                            using: function (position, feedback) {
-                                $(this).css(position);
-                                $("<div>")
-                                        .addClass("arrow")
-                                        .addClass(feedback.vertical)
-                                        .addClass(feedback.horizontal)
-                                        .appendTo(this);
+                    if (element.width() > el.width()) {
+                        el.tooltip({
+                            position: {
+                                my: "center bottom",
+                                at: "center top",
+                                collision: "flipfit",
+                                using: function (position, feedback) {
+                                    $(this).css(position);
+                                    $("<div>")
+                                            .addClass("arrow")
+                                            .addClass(feedback.vertical)
+                                            .addClass(feedback.horizontal)
+                                            .appendTo(this);
+                                }
+                            },
+                            show: {
+                                effect: "drop",
+                                direction: 'up',
+                                duration: 300,
+                                delay: 500,
+                                easing: "swing"
                             }
-                        },
-                        show: {
-                            effect: "drop",
-                            direction: 'up',
-                            duration: 300,
-                            delay: 500,
-                            easing: "swing"
-                        }
-                    });
-                } else {
-                    el.attr("tmp_title", el.attr("title"));
-                    el.attr("title", "");
-                }
+                        });
+                    } else {
+                        el.attr("tmp_title", el.attr("title"));
+                        el.attr("title", "");
+                    }
 
-                element.remove();
-            }
+                    element.remove();
+                }
+            }, 610);
         }
     }
 };

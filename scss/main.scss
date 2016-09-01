@@ -275,9 +275,10 @@ table {
     margin: 0;
     display: flex;
     flex-flow: column;
-    @include animate-maxheight-change(0.4s);
+    @include animate-maxheight-change(0.6s);
     @include bottom-right-corner-radius($default-border-radius);
     overflow: hidden;
+            min-height: 100px;
 
     thead {
         position: relative;
