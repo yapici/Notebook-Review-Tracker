@@ -415,24 +415,31 @@ var CollapsableTables = {
 var NotebooksTables = {
     adjustTableCellWidths: function () {
         $(".notebooks-table").each(function () {
-            var firstCell = $(this).find("tr td:first-child");
             var width = 0;
-            try {
-                var invisibleEl = $("#invisible-element");
-                invisibleEl.html(firstCell.html().substring(0, firstCell.html().indexOf("<span")));
-                width = invisibleEl.outerWidth() + parseInt(firstCell.css('padding-right')) * 3;
-                invisibleEl.html("");
-            } catch (e) {
+            var firstCells = $(this).find("tr td:first-child");
+            
+            $(this).find('tr').each(function () {
+                var firstCell = $(this).find("td:first-child");
+                try {
+                    var invisibleEl = $("#invisible-element");
+                    invisibleEl.html(firstCell.html().substring(0, firstCell.html().indexOf("<span")));
+                    var cellWidth = invisibleEl.outerWidth() + parseInt(firstCell.css('padding-right')) * 3;
+                    invisibleEl.html("");
+                    if (cellWidth > width) {
+                        width = cellWidth;
+                    }
+                } catch (e) {
 
-            }
+                }
+            });
 
             var numOfColumns = $(this).find("tbody tr").children().size() / $(this).find("tbody tr").size();
 
             if ($(this).width() / numOfColumns < width) {
-                firstCell.animate({width: width});
+                firstCells.animate({width: width});
                 $(this).find("tr:first-child th:first-child").animate({width: width});
             } else {
-                firstCell.css('width', "auto");
+                firstCells.css('width', "auto");
                 $(this).find("tr:first-child th:first-child").css('width', "auto");
             }
         });

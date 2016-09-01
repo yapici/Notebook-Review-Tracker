@@ -2,7 +2,7 @@
 /* ===================================================================================== */
 /* Copyright 2016 Engin Yapici <engin.yapici@gmail.com>                                  */
 /* Created on 08/03/2016                                                                 */
-/* Last modified on 08/31/2016                                                           */
+/* Last modified on 09/01/2016                                                           */
 /* ===================================================================================== */
 
 /* ===================================================================================== */
@@ -61,9 +61,9 @@
                             <option disabled selected>Project</option>
                             <option value="Project1">Project1</option>
                             <option value="Project2">Project2</option>
-                            <option value="Project3">Project3</option>
-                            <option value="Project4">Project4</option>
-                            <option value="Project5">Project5</option>
+                            <option value="Mid Project3">Mid Project3</option>
+                            <option value="Long Project4">Long Project4</option>
+                            <option value="Very Long Project5">Very Long Project5</option>
                             <option value="Project6">Project6</option>
                             <option value="Project7">Project7</option>
                         </select>
