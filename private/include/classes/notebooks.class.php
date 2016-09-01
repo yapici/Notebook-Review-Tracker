@@ -3,7 +3,7 @@
 /* ===================================================================================== */
 /* Copyright 2016 Engin Yapici <engin.yapici@gmail.com>                                  */
 /* Created on 08/05/2016                                                                 */
-/* Last modified on 08/31/2016                                                           */
+/* Last modified on 09/01/2016                                                           */
 /* ===================================================================================== */
 
 /* ===================================================================================== */
@@ -149,9 +149,9 @@ class Notebooks {
 
                     $tableBody .= "<tr id='assigned-$id'>";
                     $tableBody .= "<td>$notebookNo$commentBubble</td>";
-                    $tableBody .= "<td>$assigedDate</td>";
                     $tableBody .= "<td>$statusDropDown</td>";
                     $tableBody .= "<td>$author</td>";
+                    $tableBody .= "<td>$assigedDate</td>";
                     $tableBody .= "</tr>";
                 }
             }

@@ -168,20 +168,30 @@ table {
     @include box-shadow(0, 0, 10px, rgba(0,0,0,0.15));
     width: 100%;
 
-    thead tr th {
-        background: $main-color;
-        color: #ffffff;
-        font-size: 1em;
-        text-align: center;
-        font-weight: bold;
-        padding: 8px 20px;
-        margin: 0;
-        white-space: nowrap;
-
-        &:last-child {
-            width: 1em;
-            padding: 0;
+    thead tr {
+        th {
+            background: $main-color;
+            color: #ffffff;
+            font-size: 1em;
+            text-align: center;
+            font-weight: bold;
+            padding: 8px 20px;
             margin: 0;
+            white-space: nowrap;
+            text-overflow: ellipsis;
+            overflow: hidden;
+
+            &:last-child {
+                width: 1em;
+                min-width: 1em;
+                max-width: 1em;
+                padding: 0;
+                margin: 0;
+            }
+        }
+        
+        &.shadow th {
+            max-width: 100%;
         }
     }
 
@@ -473,21 +483,21 @@ table {
 }
 
 #main-toast-wrapper {
-  @extend .noselect;
-  cursor: default;
-  display: none;
-  font-size: 1.1em;
-  max-width: 80vw;
-  font-weight: bold;
-  @include border-radius($default-border-radius);
-  background: rgba(0, 0, 0, 0.8);
-  color: $white-color;
-  position: fixed;
-  bottom: 4vh;
-  left: 50%;
-  transform: translate(-50%, 0);
-  padding: 10px 16px;
-  z-index: 99999999;
+    @extend .noselect;
+    cursor: default;
+    display: none;
+    font-size: 1.1em;
+    max-width: 80vw;
+    font-weight: bold;
+    @include border-radius($default-border-radius);
+    background: rgba(0, 0, 0, 0.8);
+    color: $white-color;
+    position: fixed;
+    bottom: 4vh;
+    left: 50%;
+    transform: translate(-50%, 0);
+    padding: 10px 16px;
+    z-index: 99999999;
 }
 
 ::-webkit-scrollbar {

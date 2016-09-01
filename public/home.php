@@ -2,7 +2,7 @@
 /* ===================================================================================== */
 /* Copyright 2016 Engin Yapici <engin.yapici@gmail.com>                                  */
 /* Created on 08/03/2016                                                                 */
-/* Last modified on 08/30/2016                                                           */
+/* Last modified on 09/01/2016                                                           */
 /* ===================================================================================== */
 
 /* ===================================================================================== */
@@ -60,10 +60,10 @@ if (!$Session->isSessionValid()) {
                             <table id="assigned-notebooks-for-review-table-wrapper" class="notebooks-table collapsable-table scrollable-table collapsable-table-1">
                                 <thead>
                                     <tr>
-                                        <th>Notebook No</th>
-                                        <th>Assigned Date</th>
-                                        <th>Status</th>
-                                        <th>Author</th>
+                                        <th title="Notebook No">Notebook No</th>
+                                        <th title="Status">Status</th>
+                                        <th title="Author">Author</th>
+                                        <th title="Assigned Date">Assigned Date</th>
                                         <th></th>
                                     </tr>
                                     <tr class="shadow">
@@ -82,10 +82,10 @@ if (!$Session->isSessionValid()) {
                             <table id="my-notebooks-table-wrapper" class="notebooks-table collapsable-table scrollable-table collapsable-table-2">
                                 <thead>
                                     <tr>
-                                        <th>Notebook No</th>
-                                        <th>Status</th>
-                                        <th>Reviewer</th>
-                                        <th>Assigned Date</th>
+                                        <th title="Notebook No">Notebook No</th>
+                                        <th title="Status">Status</th>
+                                        <th title="Reviewer">Reviewer</th>
+                                        <th title="Assigned Date">Assigned Date</th>
                                         <th></th>
                                     </tr>
                                     <tr class="shadow">
@@ -106,11 +106,11 @@ if (!$Session->isSessionValid()) {
                             <table id="recently-added-notebooks-table-wrapper" class="notebooks-table scrollable-table">
                                 <thead>
                                     <tr>
-                                        <th>Notebook No</th>
-                                        <th>Author</th>
-                                        <th>Status</th>
-                                        <th>Reviewer</th>
-                                        <th>Assigned Date</th>
+                                        <th title="Notebook No">Notebook No</th>
+                                        <th title="Author">Author</th>
+                                        <th title="Status">Status</th>
+                                        <th title="Reviewer">Reviewer</th>
+                                        <th title="Assigned Date">Assigned Date</th>
                                         <th></th>
                                     </tr>
                                     <tr class="shadow">
