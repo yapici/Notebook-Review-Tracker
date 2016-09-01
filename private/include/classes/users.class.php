@@ -3,7 +3,7 @@
 /* ===================================================================================== */
 /* Copyright 2016 Engin Yapici <engin.yapici@gmail.com>                                  */
 /* Created on 08/04/2016                                                                 */
-/* Last modified on 08/31/2016                                                           */
+/* Last modified on 09/01/2016                                                           */
 /* ===================================================================================== */
 
 /* ===================================================================================== */
@@ -49,7 +49,7 @@ class Users {
     }
 
     private function populateArray() {
-        $sql = sprintf("SELECT id, username, email, account_status FROM %s.users ORDER BY id DESC", Constants::OMS_DB_NAME);
+        $sql = sprintf("SELECT id, username, email, account_status FROM %s.users ORDER BY username ASC", Constants::OMS_DB_NAME);
         $stmt = $this->Database->prepare($sql);
         $stmt->execute();
         while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
