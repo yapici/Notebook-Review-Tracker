@@ -292,6 +292,7 @@ var AddNewItem = {
                         if (json.status === "success") {
                             that.closePopup();
                             Core.resetSelect($("#add-new-notebook-items-wrapper select"));
+                            $("#add-new-item-author option").prop("disabled", false);
                             Core.resetErrorDiv($("#add-new-item-error-div"));
                             $("#add-new-item-number").val("");
                             $("#add-new-item-comments").val("");

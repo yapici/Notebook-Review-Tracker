@@ -3,7 +3,7 @@
 /* ===================================================================================== */
 /* Copyright 2016 Engin Yapici <engin.yapici@gmail.com>                                  */
 /* Created on 08/05/2016                                                                 */
-/* Last modified on 09/01/2016                                                           */
+/* Last modified on 09/09/2016                                                           */
 /* ===================================================================================== */
 
 /* ===================================================================================== */
@@ -218,7 +218,7 @@ class Notebooks {
         $sql .= "SELECT :notebookNo, :authorId, id, :createdBy, :lastModifiedBy, :currentDate FROM %s.users WHERE username = :username";
 
         $query = sprintf($sql, Constants::OMS_DB_NAME);
-        
+
         $authorId = $this->Users->getUserId($author);
 
         $currentDate = date("Y-m-d H:i:s");
@@ -231,10 +231,10 @@ class Notebooks {
         $stmt->bindValue(':username', $assignedTo, PDO::PARAM_STR);
 
         if ($stmt->execute()) {
+            $notebookId = $this->Database->lastInsertId();
+            
             $this->refreshArray();
             if ($comment != "") {
-                $notebookId = $this->Database->lastInsertId();
-
                 if ($this->Comments->addComment($notebookId, $comment, $_SESSION['id'])) {
                     $this->Comments->refreshArray();
                     return true;
@@ -252,6 +252,7 @@ class Notebooks {
     public function getNotebookDetails($id) {
         return $this->notebooksArray[$id];
     }
+
 }
 
 ?>

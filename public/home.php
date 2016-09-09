@@ -2,7 +2,7 @@
 /* ===================================================================================== */
 /* Copyright 2016 Engin Yapici <engin.yapici@gmail.com>                                  */
 /* Created on 08/03/2016                                                                 */
-/* Last modified on 09/01/2016                                                           */
+/* Last modified on 09/09/2016                                                           */
 /* ===================================================================================== */
 
 /* ===================================================================================== */
@@ -51,7 +51,7 @@ if (!$Session->isSessionValid()) {
         <div id="gray-out-div"></div>
         <img id="progress-bar" src="images/progress-bar.gif"/>
         <div id="home-main-body-wrapper">
-            <span id='version-span'>Version 1.0.0.<?php echo file_get_contents($file); ?></span>
+            <span id='version-span'>Version 1.0.1.<?php echo file_get_contents($file); ?></span>
             <div style="display: table;" id="main-wrapper-table">
                 <div style="display: table-row;" class="main-wrapper-table-tr">
                     <div style="display: table-cell;" class="main-wrapper-table-td">
