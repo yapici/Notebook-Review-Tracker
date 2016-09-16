@@ -1,41 +1,69 @@
-var resizeTimer;
-var windowHeight;
+var PageCore;
+var CommentsBubble;
+var AddNewItem;
+var DynamicTables;
+var NotebooksTables;
+var AssignedNotebooks;
+var MyNotebooks;
+
 $(window).load(function () {
-    windowHeight = $(window).height();
-    AddNewItem.selectChangeListener();
-    CommentsBubble.clickListeners();
-    CollapsableTables.resizeCollapsibleTables();
-    NotebooksTables.adjustTableCellWidths();
-    AssignedNotebooks.statusChangeListener();
+    PageCore.init();
+    CommentsBubble.init(Core);
+    AddNewItem.init(Core, Constants, DynamicTables, NotebooksTables);
+    DynamicTables.init();
+    NotebooksTables.init(Core);
+    AssignedNotebooks.init(NotebooksTables);
+    MyNotebooks.init(NotebooksTables);
 });
 
 $(window).on('resize', function () {
-    clearTimeout(resizeTimer);
-    resizeTimer = setTimeout(function () {
-        if (windowHeight !== $(window).height()) {
-            windowHeight = $(window).height();
-            CollapsableTables.resizeCollapsibleTables();
+    clearTimeout(PageCore.settings.resizeTimer);
+    PageCore.settings.resizeTimer = setTimeout(function () {
+        if (PageCore.settings.windowHeight !== $(window).height()) {
+            PageCore.settings.windowHeight = $(window).height();
+            DynamicTables.resizeCollapsibleTables();
         }
         NotebooksTables.adjustTableCellWidths();
         CommentsBubble.reposition();
     }, 400);
 });
 
-var CommentsBubble = {
-    bubbleHeight: "",
-    tr: "",
-    isVisible: false,
-    wrapper: "#notebook-table-element-holder",
-    parentId: "",
-    commentsHtml: "",
-    clickListeners: function () {
-        var that = this;
+PageCore = {
+    settings: {
+        resizeTimer: "",
+        windowHeigth: ""
+    },
+    init: function () {
+        this.settings.windowHeight = $(window).height();
+    }
+};
 
-        $(that.wrapper).on("click", ".comment-bubble", function (e) {
+CommentsBubble = {
+    settings: {
+        core: "",
+        bubbleHeight: "",
+        tr: "",
+        isVisible: false,
+        wrapper: "#notebook-table-element-holder",
+        parentId: "",
+        commentsHtml: ""
+    },
+    /**
+     * @param {Core} core
+     */
+    init: function (core) {
+        this.settings.core = core;
+
+        this.clickListeners();
+    },
+    clickListeners: function () {
+        var self = this;
+
+        $(self.settings.wrapper).on("click", ".comment-bubble", function (e) {
             e.stopPropagation();
         });
 
-        $(that.wrapper).on("click", "select", function (e) {
+        $(self.settings.wrapper).on("click", "select", function (e) {
             e.stopPropagation();
         });
 
@@ -47,8 +75,8 @@ var CommentsBubble = {
         });
 
         $(document).on("click", "#gray-out-div", function () {
-            if (that.isVisible) {
-                that.hide();
+            if (self.settings.isVisible) {
+                self.hide();
             }
         });
 
@@ -56,24 +84,24 @@ var CommentsBubble = {
             if (e.target.nodeName === "SELECT") {
                 return;
             }
-            that.tr = $(this);
+            self.settings.tr = $(this);
 
-            if (!that.isVisible) {
-                that.show();
+            if (!self.settings.isVisible) {
+                self.show();
             } else {
-                that.hide();
+                self.hide();
             }
         });
     },
     show: function () {
-        var that = this;
-        var tr = that.tr;
+        var self = this;
+        var tr = self.settings.tr;
         var trId = tr.attr("id");
         var radius = tr.closest("table").css("border-bottom-right-radius");
-        var wrapper = $(that.wrapper);
+        var wrapper = $(self.settings.wrapper);
         wrapper.show();
 
-        that.isVisible = true;
+        self.settings.isVisible = true;
         $("#gray-out-div").fadeIn();
         wrapper.html("");
         wrapper.html("<span class='close-popup-button' style='top: -1.6em; right: 0;' onclick='CommentsBubble.hide()'></span><table><tr class='" + trId + "'>" + tr.html() + "</tr></table>");
@@ -103,7 +131,7 @@ var CommentsBubble = {
             width: tr.outerWidth()
         });
 
-        that.bubbleHeight = bubble.height();
+        self.settings.bubbleHeight = bubble.height();
         bubble.css("width", tr.width());
         bubble.animate({
             height: "auto",
@@ -120,15 +148,15 @@ var CommentsBubble = {
             borderBottomRightRadius: radius
         });
 
-        that.scrollToBottom(wrapper.find(".comment-elements-outer-wrappper"));
+        self.scrollToBottom(wrapper.find(".comment-elements-outer-wrappper"));
 
-        Core.ajaxKeepGrayOut = true;
+        self.settings.core.ajaxKeepGrayOut = true;
     },
     hide: function () {
-        var that = this;
-        that.isVisible = false;
-        var tr = that.tr;
-        var wrapper = $(that.wrapper);
+        var self = this;
+        self.settings.isVisible = false;
+        var tr = self.settings.tr;
+        var wrapper = $(self.settings.wrapper);
         var bubble = wrapper.find(".comment-bubble");
         $("#gray-out-div").fadeOut();
 
@@ -145,21 +173,21 @@ var CommentsBubble = {
             minHeight: "0px"
         }, 500).promise().done(function () {
             bubble.hide().css({
-                height: that.bubbleHeight
+                height: self.settings.bubbleHeight
             });
             wrapper.html("");
             wrapper.hide();
-            $(that.parentId).html(that.commentsHtml);
+            $(self.settings.parentId).html(self.settings.commentsHtml);
         });
 
-        Core.ajaxKeepGrayOut = false;
+        self.settings.core.ajaxKeepGrayOut = false;
     },
     reposition: function () {
-        var that = this;
-        if (that.isVisible) {
-            var wrapper = $(that.wrapper);
+        var self = this;
+        if (self.settings.isVisible) {
+            var wrapper = $(self.settings.wrapper);
             var bubble = wrapper.find(".comment-bubble");
-            var tr = that.tr;
+            var tr = self.settings.tr;
 
             wrapper.animate({
                 top: $(window).height() / 2 - wrapper.outerHeight() - bubble.outerHeight() / 2,
@@ -173,13 +201,13 @@ var CommentsBubble = {
         }
     },
     addComment: function (element) {
-        var that = this;
+        var self = this;
         var innerWrapper = $(element).closest('.comment-bubble-inner-wrapper');
         var id = innerWrapper.find("textarea").attr("class").split('-').pop().trim();
         var textarea = innerWrapper.find("textarea");
         var comment = textarea.val().trim();
         var errorDiv = innerWrapper.find(".error-div");
-        Core.resetErrorDiv(errorDiv);
+        self.settings.core.resetErrorDiv(errorDiv);
 
         if (comment !== "") {
             var params = {
@@ -192,14 +220,14 @@ var CommentsBubble = {
                 errorDiv: errorDiv
             };
 
-            Core.ajax(params,
+            self.settings.core.ajax(params,
                     function (json) {
                         if (json.status === "success") {
-                            that.parentId = "." + innerWrapper.find(".comment-elements-outer-wrappper").attr('class').split(' ')[0];
-                            that.commentsHtml = json.comments;
+                            self.settings.parentId = "." + innerWrapper.find(".comment-elements-outer-wrappper").attr('class').split(' ')[0];
+                            self.settings.commentsHtml = json.comments;
 
                             innerWrapper.find(".comment-elements-outer-wrappper").html(json.comments);
-                            that.scrollToBottom(innerWrapper.find(".comment-elements-outer-wrappper"));
+                            self.scrollToBottom(innerWrapper.find(".comment-elements-outer-wrappper"));
 
                             textarea.val("");
                         } else {
@@ -220,7 +248,27 @@ var CommentsBubble = {
     }
 };
 
-var AddNewItem = {
+AddNewItem = {
+    settings: {
+        core: "",
+        constants: "",
+        dynamicTables: "",
+        notebooksTables: ""
+    },
+    /**
+     * @param {Core} core
+     * @param {Constants} constants
+     * @param {DynamicTables} dynamicTables
+     * @param {NotebooksTables} notebooksTables
+     */
+    init: function (core, constants, dynamicTables, notebooksTables) {
+        this.settings.core = core;
+        this.settings.constants = constants;
+        this.settings.dynamicTables = dynamicTables;
+        this.settings.notebooksTables = notebooksTables;
+
+        this.selectChangeListener();
+    },
     toggleAddNewItemView: function () {
         var view = $("#add-new-notebook-items-inner-wrapper");
         $("#add-new-item-error-div").html("");
@@ -248,7 +296,7 @@ var AddNewItem = {
         }
     },
     addNewItem: function () {
-        var that = this;
+        var self = this;
         var division = $("#add-new-item-division").val();
         var project = $("#add-new-item-project").val();
         var number = $("#add-new-item-number").val();
@@ -287,26 +335,26 @@ var AddNewItem = {
                 errorDiv: $("#add-new-item-error-div")
             };
 
-            Core.ajax(params,
+            self.settings.core.ajax(params,
                     function (json) {
                         if (json.status === "success") {
-                            that.closePopup();
-                            Core.resetSelect($("#add-new-notebook-items-wrapper select"));
+                            self.closePopup();
+                            self.settings.core.resetSelect($("#add-new-notebook-items-wrapper select"));
                             $("#add-new-item-author option").prop("disabled", false);
-                            Core.resetErrorDiv($("#add-new-item-error-div"));
+                            self.settings.core.resetErrorDiv($("#add-new-item-error-div"));
                             $("#add-new-item-number").val("");
                             $("#add-new-item-comments").val("");
 
-                            that.closePopup();
-                            Core.showToast("New item is added successfully");
+                            self.closePopup();
+                            self.settings.core.showToast("New item is added successfully");
 
                             $("#assigned-notebooks-for-review-table-wrapper tbody").html(json.assigned_notebooks_tbody);
                             $("#my-notebooks-table-wrapper tbody").html(json.my_notebooks_tbody);
                             $("#recently-added-notebooks-table-wrapper tbody").html(json.recent_notebooks_tbody);
-                            CollapsableTables.resizeCollapsibleTables();
-                            NotebooksTables.adjustTableCellWidths();
+                            self.settings.dynamicTables.resizeCollapsibleTables();
+                            self.settings.notebooksTables.adjustTableCellWidths();
                         } else {
-                            errorDiv.html(Constants.SERVER_FAIL_RESPONSE);
+                            errorDiv.html(self.settings.constants.SERVER_FAIL_RESPONSE);
                         }
                     });
         }
@@ -321,30 +369,31 @@ var AddNewItem = {
         $("#gray-out-div").fadeOut();
     },
     selectChangeListener: function () {
+        var self = this;
+
         $("#add-new-notebook-items-wrapper select").css('color', '#999999');
 
         $(document).on('change', '#add-new-notebook-items-wrapper select', function () {
             if (!$(this).is(':disabled')) {
-                $(this).css('color', Constants.MAIN_TEXT_COLOR);
+                $(this).css('color', self.settings.constants.MAIN_TEXT_COLOR);
             }
         });
     }
 };
 
-var CollapsableTables = {
-    collapsableTable1Visible: true,
-    collapsableTable2Visible: true,
+DynamicTables = {
+    settings: {
+        dynamicTable1Visible: true,
+        dynamicTable2Visible: true
+    },
+    init: function () {
+        this.resizeCollapsibleTables();
+    },
     resizeCollapsibleTables: function () {
         var viewportHeight = $(window).height();
         var headerHeight = $(".header").outerHeight();
 
-        var tableHeadingHeights =
-                (
-                        (
-                                $(".collapsable-table").siblings('.heading').outerHeight() +
-                                parseInt($(".collapsable-table").siblings('.heading').css("margin-top"))
-                                )
-                        * 2) || 84;
+        var tableHeadingHeights = ($(".dynamic-table").siblings('.heading').outerHeight() + parseInt($(".dynamic-table").siblings('.heading').css("margin-top"))) * 2 || 84;
         var tablesWrapperMargin = (parseInt($(".table-wrapper").css("margin-bottom")) + parseInt($(".table-wrapper").css("margin-top")) * 2) || 60;
         var mainWrapperPaddings = (parseInt($("#home-main-body-wrapper").css("padding-bottom")) + parseInt($("#home-main-body-wrapper").css("padding-top")) * 2) || 40;
 
@@ -358,65 +407,79 @@ var CollapsableTables = {
         $("#recently-added-notebooks-table-wrapper").css("max-height", availableHeight + tablesWrapperMargin / 2 + tableHeadingHeights / 2);
         $("#home-main-body-wrapper").css("height", availableHeight);
 
-        var collapsableTable1MaxHeight;
-        var collapsableTable2MaxHeight;
+        var dynamicTable1MaxHeight;
+        var dynamicTable2MaxHeight;
 
-        var collapsableTable1 = $(".collapsable-table-1");
-        var collapsableTable2 = $(".collapsable-table-2");
+        var dynamicTable1 = $(".dynamic-table-1");
+        var dynamicTable2 = $(".dynamic-table-2");
 
         var invisibleHolder = $("#invisible-element");
-        invisibleHolder.html("<table class='notebooks-table'>" + collapsableTable1.html() + "</table>");
-        collapsableTable1MaxHeight = invisibleHolder.height();
+        invisibleHolder.html("<table class='notebooks-table'>" + dynamicTable1.html() + "</table>");
+        dynamicTable1MaxHeight = invisibleHolder.height();
 
-        if (collapsableTable1MaxHeight < 100) {
-            collapsableTable1.css("min-height", collapsableTable1MaxHeight);
+        if (dynamicTable1MaxHeight < 100) {
+            dynamicTable1.css("min-height", dynamicTable1MaxHeight);
         }
 
-        invisibleHolder.html("<table class='notebooks-table'>" + collapsableTable2.html() + "</table>");
-        collapsableTable2MaxHeight = invisibleHolder.height();
+        invisibleHolder.html("<table class='notebooks-table'>" + dynamicTable2.html() + "</table>");
+        dynamicTable2MaxHeight = invisibleHolder.height();
         invisibleHolder.html("");
 
-        if (collapsableTable2MaxHeight < 100) {
-            collapsableTable2.css("min-height", collapsableTable2MaxHeight);
+        if (dynamicTable2MaxHeight < 100) {
+            dynamicTable2.css("min-height", dynamicTable2MaxHeight);
         }
 
         var halfOfAvailableHeight = availableHeight / 2;
 
-        if (this.collapsableTable1Visible
-                && !this.collapsableTable2Visible) {
-            collapsableTable1.css("max-height", availableHeight);
-        } else if (!this.collapsableTable1Visible
-                && this.collapsableTable2Visible) {
-            collapsableTable2.css("max-height", availableHeight);
-        } else if (this.collapsableTable1Visible
-                && this.collapsableTable2Visible) {
+        if (this.settings.dynamicTable1Visible
+                && !this.settings.dynamicTable2Visible) {
+            dynamicTable1.css("max-height", availableHeight);
+        } else if (!this.settings.dynamicTable1Visible
+                && this.settings.dynamicTable2Visible) {
+            dynamicTable2.css("max-height", availableHeight);
+        } else if (this.settings.dynamicTable1Visible
+                && this.settings.dynamicTable2Visible) {
             halfOfAvailableHeight = availableHeight / 2;
 
-            if (collapsableTable1MaxHeight < halfOfAvailableHeight) {
-                if (collapsableTable2MaxHeight > halfOfAvailableHeight) {
-                    collapsableTable1.css("max-height", collapsableTable1MaxHeight);
-                    collapsableTable2.css("max-height", availableHeight - collapsableTable1MaxHeight);
+            if (dynamicTable1MaxHeight < halfOfAvailableHeight) {
+                if (dynamicTable2MaxHeight > halfOfAvailableHeight) {
+                    dynamicTable1.css("max-height", dynamicTable1MaxHeight);
+                    dynamicTable2.css("max-height", availableHeight - dynamicTable1MaxHeight);
                 } else {
-                    collapsableTable1.css("max-height", collapsableTable1MaxHeight);
-                    collapsableTable2.css("max-height", collapsableTable2MaxHeight);
+                    dynamicTable1.css("max-height", dynamicTable1MaxHeight);
+                    dynamicTable2.css("max-height", dynamicTable2MaxHeight);
                 }
-            } else if (collapsableTable1MaxHeight > halfOfAvailableHeight) {
-                if (collapsableTable2MaxHeight < halfOfAvailableHeight) {
-                    collapsableTable1.css("max-height", availableHeight - collapsableTable2MaxHeight);
-                    collapsableTable2.css("max-height", collapsableTable2MaxHeight);
+            } else if (dynamicTable1MaxHeight > halfOfAvailableHeight) {
+                if (dynamicTable2MaxHeight < halfOfAvailableHeight) {
+                    dynamicTable1.css("max-height", availableHeight - dynamicTable2MaxHeight);
+                    dynamicTable2.css("max-height", dynamicTable2MaxHeight);
                 } else {
-                    collapsableTable1.css("max-height", halfOfAvailableHeight);
-                    collapsableTable2.css("max-height", halfOfAvailableHeight);
+                    dynamicTable1.css("max-height", halfOfAvailableHeight);
+                    dynamicTable2.css("max-height", halfOfAvailableHeight);
                 }
             }
         }
     }
 };
 
-var NotebooksTables = {
-    cellWidthAdjustTimeout: "",
+NotebooksTables = {
+    settings: {
+        core: "",
+        cellWidthAdjustTimeout: "",
+        currentStatus: ""
+    },
+    /**
+     * @param {Core} core
+     */
+    init: function (core) {
+        this.settings.core = core;
+
+        this.adjustTableCellWidths();
+
+        this.statusChangeListener();
+    },
     adjustTableCellWidths: function () {
-        var that = this;
+        var self = this;
         $(".notebooks-table").each(function () {
             var width = 0;
             var firstCells = $(this).find("tr td:first-child");
@@ -449,8 +512,8 @@ var NotebooksTables = {
         });
 
         function prepareTooltip() {
-            clearTimeout(that.cellWidthAdjustTimeout);
-            that.cellWidthAdjustTimeout = setTimeout(function () {
+            clearTimeout(self.settings.cellWidthAdjustTimeout);
+            self.settings.cellWidthAdjustTimeout = setTimeout(function () {
                 $('.notebooks-table td+td').each(function (i) {
                     prep($(this));
                 });
@@ -497,34 +560,9 @@ var NotebooksTables = {
                 }
             }, 610);
         }
-    }
-};
-
-var AssignedNotebooks = {
-    currentStatus: "",
-    statusChangeListener: function () {
-        var that = this;
-
-        $("#assigned-notebooks-for-review-table-wrapper").on("focus", ".statuses-dropdown", function () {
-            that.currentStatus = $(this).val();
-        }).on("change", ".statuses-dropdown", function () {
-            if (that.currentStatus !== $(this).val()) {
-                var notebookId = $(this).closest('tr').attr("id").split('-').pop().trim();
-                that.updateStatus(notebookId, $(this).val());
-            }
-        });
-
-        $("#notebook-table-element-holder").on("focus", ".statuses-dropdown", function () {
-            that.currentStatus = $(this).val();
-        }).on("change", ".statuses-dropdown", function () {
-            if (that.currentStatus !== $(this).val()) {
-                var notebookId = $(this).closest('tr').attr("class").split(' ')[0].split('-').pop().trim();
-                that.updateStatus(notebookId, $(this).val());
-            }
-        });
     },
     updateStatus: function (notebookId, statusId) {
-        var that = this;
+        var self = this;
 
         var params = {
             url: "ajax/update-status.php",
@@ -536,13 +574,77 @@ var AssignedNotebooks = {
             errorDiv: $("#main-error-div")
         };
 
-        Core.ajax(
+        self.settings.core.ajax(
                 params,
                 function (json) {
                     if (json.status === "success") {
-                        that.currentStatus = "";
-                        Core.showToast("Status was successfully updated");
+                        self.settings.currentStatus = "";
+                        self.settings.core.showToast("Status was successfully updated");
                     }
                 });
+    },
+    statusChangeListener: function () {
+        var self = this;
+
+        $("#notebook-table-element-holder").on("focus", ".statuses-dropdown", function () {
+            self.settings.currentStatus = $(this).val();
+        }).on("change", ".statuses-dropdown", function () {
+            if (self.settings.currentStatus !== $(this).val()) {
+                var notebookId = $(this).closest('tr').attr("class").split(' ')[0].split('-').pop().trim();
+                self.settings.updateStatus(notebookId, $(this).val());
+            }
+        });
+    }
+};
+
+AssignedNotebooks = {
+    settings: {
+        notebooksTables: ""
+    },
+    /**
+     * @param {NotebooksTables} notebooksTables
+     */
+    init: function (notebooksTables) {
+        this.settings.notebooksTables = notebooksTables;
+
+        this.statusChangeListener();
+    },
+    statusChangeListener: function () {
+        var self = this;
+
+        $("#assigned-notebooks-for-review-table-wrapper").on("focus", ".statuses-dropdown", function () {
+            self.settings.notebooksTables.currentStatus = $(this).val();
+        }).on("change", ".statuses-dropdown", function () {
+            if (self.settings.notebooksTables.currentStatus !== $(this).val()) {
+                var notebookId = $(this).closest('tr').attr("id").split('-').pop().trim();
+                self.settings.notebooksTables.updateStatus(notebookId, $(this).val());
+            }
+        });
+    }
+};
+
+MyNotebooks = {
+    settings: {
+        notebooksTables: ""
+    },
+    /**
+     * @param {NotebooksTables} notebooksTables
+     */
+    init: function (notebooksTables) {
+        this.settings.notebooksTables = notebooksTables;
+
+        this.statusChangeListener();
+    },
+    statusChangeListener: function () {
+        var self = this;
+
+        $("#my-notebooks-table-wrapper").on("focus", ".statuses-dropdown", function () {
+            self.settings.notebooksTables.currentStatus = $(this).val();
+        }).on("change", ".statuses-dropdown", function () {
+            if (self.settings.notebooksTables.currentStatus !== $(this).val()) {
+                var notebookId = $(this).closest('tr').attr("id").split('-').pop().trim();
+                self.settings.notebooksTables.updateStatus(notebookId, $(this).val());
+            }
+        });
     }
 };

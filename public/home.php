@@ -2,7 +2,7 @@
 /* ===================================================================================== */
 /* Copyright 2016 Engin Yapici <engin.yapici@gmail.com>                                  */
 /* Created on 08/03/2016                                                                 */
-/* Last modified on 09/09/2016                                                           */
+/* Last modified on 09/16/2016                                                           */
 /* ===================================================================================== */
 
 /* ===================================================================================== */
@@ -51,18 +51,18 @@ if (!$Session->isSessionValid()) {
         <div id="gray-out-div"></div>
         <img id="progress-bar" src="images/progress-bar.gif"/>
         <div id="home-main-body-wrapper">
-            <span id='version-span'>Version 1.0.1.<?php echo file_get_contents($file); ?></span>
+            <span id='version-span'>Version 1.1.0.<?php echo file_get_contents($file); ?></span>
             <div style="display: table;" id="main-wrapper-table">
                 <div style="display: table-row;" class="main-wrapper-table-tr">
                     <div style="display: table-cell;" class="main-wrapper-table-td">
                         <div id="assigned-notebooks-for-review-table-wrapper" class="table-wrapper">
                             <div class="heading table-heading">Notebooks Assigned to Me</div>
-                            <table id="assigned-notebooks-for-review-table-wrapper" class="notebooks-table collapsable-table scrollable-table collapsable-table-1">
+                            <table id="assigned-notebooks-for-review-table-wrapper" class="notebooks-table dynamic-table scrollable-table dynamic-table-1">
                                 <thead>
                                     <tr>
                                         <th title="Notebook No">Notebook No</th>
-                                        <th title="Status">Status</th>
                                         <th title="Author">Author</th>
+                                        <th title="Status">Status</th>
                                         <th title="Assigned Date">Assigned Date</th>
                                         <th></th>
                                     </tr>
@@ -79,12 +79,12 @@ if (!$Session->isSessionValid()) {
                         </div>
                         <div id="my-notebooks-waiting-for-review-table-wrapper" class="table-wrapper">
                             <div class="heading table-heading">My Notebooks</div>
-                            <table id="my-notebooks-table-wrapper" class="notebooks-table collapsable-table scrollable-table collapsable-table-2">
+                            <table id="my-notebooks-table-wrapper" class="notebooks-table dynamic-table scrollable-table dynamic-table-2">
                                 <thead>
                                     <tr>
                                         <th title="Notebook No">Notebook No</th>
-                                        <th title="Reviewer">Reviewer</th>
                                         <th title="Status">Status</th>
+                                        <th title="Reviewer">Reviewer</th>
                                         <th title="Assigned Date">Assigned Date</th>
                                         <th></th>
                                     </tr>

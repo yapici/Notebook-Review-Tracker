@@ -3,7 +3,7 @@
 /* ===================================================================================== */
 /* Copyright 2016 Engin Yapici <engin.yapici@gmail.com>                                  */
 /* Created on 08/05/2016                                                                 */
-/* Last modified on 09/09/2016                                                           */
+/* Last modified on 09/16/2016                                                           */
 /* ===================================================================================== */
 
 /* ===================================================================================== */
@@ -169,13 +169,14 @@ class Notebooks {
                 if ($notebook['author_id'] == $_SESSION['id']) {
                     $notebookNo = $notebook['notebook_no'];
                     $assigedDate = $this->Functions->convertMysqlDateToPhpDate($notebook['created_date']);
-                    $status = $notebook['status_name'];
+                    $statusId = $notebook['status_id'];
                     $reviewer = $notebook['reviewer_username'];
                     $commentBubble = $this->prepareCommentBubble($id);
+                    $statusDropDown = $this->Statuses->populateStatusesforTable($statusId);
 
                     $tableBody .= "<tr id='my-$id'>";
                     $tableBody .= "<td title='$notebookNo'>$notebookNo$commentBubble</td>";
-                    $tableBody .= "<td title='$status'>$status</td>";
+                    $tableBody .= "<td>$statusDropDown</td>";
                     $tableBody .= "<td title='$reviewer'>$reviewer</td>";
                     $tableBody .= "<td title='$assigedDate'>$assigedDate</td>";
                     $tableBody .= "</tr>";
